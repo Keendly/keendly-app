@@ -1,0 +1,32 @@
+.Pagination {
+  &__wrapper {
+    text-align: center;
+    list-style-type: none;
+  }
+
+  &__arrow {
+    display: inline-block;
+    font-size: 1.2rem;
+    padding: 0 10px;
+    vertical-align: middle;
+    &--active {
+      cursor: pointer;
+    }
+    &--disabled {
+      svg {
+        fill: grey !important;
+      }
+    }
+  }
+
+  &__number {
+    font-size: 1.2rem;
+    padding: 0 10px;
+    cursor: pointer;
+    &--active {
+      background-color: #39b1c6;
+      border-radius: 2px;
+    }
+    display: inline-block;
+  }
+}

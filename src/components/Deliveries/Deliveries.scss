@@ -1,0 +1,11 @@
+.Deliveries {
+  &__table {
+    width: 75%;
+    margin: auto;
+    margin-top: 20px;
+
+    > div {
+      border-radius: 5px;
+    }
+  }
+}

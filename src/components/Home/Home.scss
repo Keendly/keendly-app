@@ -1,0 +1,70 @@
+@import "../../vars";
+
+.Home {
+  &__feed_title {
+    float: left;
+    margin-top: .2rem !important;
+  }
+
+  &__feed_badge {
+    span {
+      background-color: $primary !important;
+      color: white !important;
+    }
+  }
+
+  &__category_chip {
+    margin-top: .7rem !important;
+    margin-bottom: .7rem !important;
+    margin-left: 0.3rem !important;
+    float: right !important;
+
+    &_black {
+      span {
+        color: black !important;
+      }
+    }
+
+    &_white {
+      span {
+        color: white !important;
+      }
+    }
+    span {
+      font-size: 12px !important;
+      line-height: 25px !important;
+    }
+  }
+
+  &__table {
+    width: 75%;
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 10px;
+
+    > div {
+      border-radius: 5px;
+    }
+  }
+
+  &__button {
+    float: left;
+    button {
+      background-color: $primary !important;
+    }
+    margin-right: .3rem;
+
+    :hover {
+      background-color: $secondary !important;
+    }
+  }
+
+  &__buttons {
+    display: table;
+    width: 100%;
+  }
+
+  &__search {
+    float: right;
+  }
+}
