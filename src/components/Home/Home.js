@@ -3,16 +3,16 @@ import PropTypes from "prop-types";
 import moment from "moment-timezone";
 import Chip from "material-ui/Chip";
 import Badge from "material-ui/Badge";
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn
-} from "material-ui/Table";
+import Checkbox from "material-ui/Checkbox";
 import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
+
+import Table, {
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow
+} from "material-ui-next/Table";
 
 import "./Home.css";
 
@@ -60,12 +60,12 @@ class Home extends React.Component {
       search_text: "",
       selectedRows: []
     };
-    this.onRowSelection = this.onRowSelection.bind(this);
     this.onSearchTextChanged = this.onSearchTextChanged.bind(this);
     this.handleDeliveryOpen = this.handleDeliveryOpen.bind(this);
     this.handleDeliveryClose = this.handleDeliveryClose.bind(this);
     this.handleSubscriptionOpen = this.handleSubscriptionOpen.bind(this);
     this.handleSubscriptionClose = this.handleSubscriptionClose.bind(this);
+    this.onSelectAllClick = this.onSelectAllClick.bind(this);
     this.categoryColors = {};
   }
 
@@ -99,21 +99,31 @@ class Home extends React.Component {
     return this.categoryColors[category];
   }
 
-  onRowSelection(selectedRows) {
-    console.log(selectedRows);
-    if (selectedRows === "none") {
-      this.setState({ selectedRows: [] }, () =>
-        this.tableBody.setState({ selectedRows: [] })
-      );
-    } else if (selectedRows === "all") {
-      const rows = this.state.data.map((item, index) => index);
-      this.setState({ selectedRows: rows }, () =>
-        this.tableBody.setState({ selectedRows: rows })
-      );
+  onSelectAllClick(event, isInputChecked) {
+    if (isInputChecked) {
+      const rows = this.state.data.map(item => item.feedId);
+      this.setState({ selectedRows: rows });
     } else {
-      this.setState({ selectedRows }, () =>
-        this.tableBody.setState({ selectedRows })
-      );
+      this.setState({ selectedRows: [] });
+    }
+  }
+
+  onSelectClick(feed, isInputChecked) {
+    if (isInputChecked) {
+      this.setState((previousState, props) => {
+        previousState.selectedRows.push(feed.feedId);
+        return {
+          selectedRows: previousState.selectedRows
+        };
+      });
+    } else {
+      this.setState((previousState, props) => {
+        const index = previousState.selectedRows.indexOf(feed.feedId);
+        previousState.selectedRows.splice(index, 1);
+        return {
+          selectedRows: previousState.selectedRows
+        };
+      });
     }
   }
 
@@ -170,58 +180,70 @@ class Home extends React.Component {
             onChange={this.onSearchTextChanged}
           />
         </div>
-        <Table multiSelectable={true} onRowSelection={this.onRowSelection}>
-          <TableHeader enableSelectAll={true}>
-            <TableRow>
-              <TableHeaderColumn style={{ width: "50%" }}>
-                Title
-              </TableHeaderColumn>
-              <TableHeaderColumn>Last delivery</TableHeaderColumn>
-              <TableHeaderColumn>Next delivery</TableHeaderColumn>
-            </TableRow>
-          </TableHeader>
-          <TableBody
-            ref={tableBody => {
-              this.tableBody = tableBody;
-            }}
-          >
-            {this.state.data.map(
-              (feed, index) =>
-                (!this.state.search_text ||
-                  feed.title
-                    .toLowerCase()
-                    .includes(this.state.search_text.toLowerCase())) &&
-                <TableRow
-                  key={index}
-                  className="Home__feed_row"
-                  selected={this.state.selectedRows.indexOf(index) !== -1}
-                >
-                  >
-                  <TableRowColumn style={{ width: "50%" }}>
-                    <div className="Home__feed_title">
-                      <Badge
-                        badgeContent={
-                          feed.unreadCount > 99 ? "99+" : feed.unreadCount
+        {
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell checkbox>
+                  <Checkbox
+                    onCheck={this.onSelectAllClick}
+                    checked={
+                      this.state.selectedRows.length === this.state.data.length
+                    }
+                  />
+                </TableCell>
+                <TableCell>Title</TableCell>
+                <TableCell>Last delivery</TableCell>
+                <TableCell>Next delivery</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody
+              ref={tableBody => {
+                this.tableBody = tableBody;
+              }}
+            >
+              {this.state.data.map(
+                (feed, index) =>
+                  (!this.state.search_text ||
+                    feed.title
+                      .toLowerCase()
+                      .includes(this.state.search_text.toLowerCase())) &&
+                  <TableRow key={index} className="Home__feed_row">
+                    <TableCell checkbox>
+                      <Checkbox
+                        onCheck={(event, isInputChecked) =>
+                          this.onSelectClick(feed, isInputChecked)}
+                        checked={
+                          this.state.selectedRows.indexOf(feed.feedId) !== -1
                         }
-                        className="Home__feed_badge"
-                      >
-                        {feed.title}
-                      </Badge>
-                    </div>
-                    {feed.categories &&
-                      feed.categories.map(this.renderChip, this)}
-                  </TableRowColumn>
-                  <TableRowColumn>
-                    {feed.lastDelivery &&
-                      moment(feed.lastDelivery.deliveryDate).fromNow()}
-                  </TableRowColumn>
-                  <TableRowColumn>
-                    {nextDelivery(feed.subscriptions)}
-                  </TableRowColumn>
-                </TableRow>
-            )}
-          </TableBody>
-        </Table>
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <div className="Home__feed_title">
+                        <Badge
+                          badgeContent={
+                            feed.unreadCount > 99 ? "99+" : feed.unreadCount
+                          }
+                          className="Home__feed_badge"
+                        >
+                          {feed.title}
+                        </Badge>
+                      </div>
+                      {feed.categories &&
+                        feed.categories.map(this.renderChip, this)}
+                    </TableCell>
+                    <TableCell>
+                      {feed.lastDelivery &&
+                        moment(feed.lastDelivery.deliveryDate).fromNow()}
+                    </TableCell>
+                    <TableCell>
+                      {nextDelivery(feed.subscriptions)}
+                    </TableCell>
+                  </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        }
       </div>
     );
   }

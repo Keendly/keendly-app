@@ -82,6 +82,7 @@ class Header extends React.Component {
             </ToolbarGroup>
           </Toolbar>
           <div>
+            {this.state.showLoading && <LinearProgress mode="indeterminate" />}
             <Route
               exact
               path="/"
@@ -92,7 +93,12 @@ class Header extends React.Component {
             <Route
               path="/deliveries"
               component={() =>
-                <Deliveries token={this.props.token} url={this.props.url} />}
+                <Deliveries
+                  token={this.props.token}
+                  url={this.props.url}
+                  onEnter={() => this.setState({ showLoading: true })}
+                  hideLoading={() => this.setState({ showLoading: false })}
+                />}
             />
             <Route path="/settings" component={Settings} />
           </div>

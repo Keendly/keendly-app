@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "material-ui": "^0.18.3",
+    "material-ui": "^v0.18.7",
+    "material-ui-next": "file:packages/material-ui-next",
     "moment": "^2.18.1",
     "moment-timezone": "^0.5.13",
     "prop-types": "^15.5.10",
