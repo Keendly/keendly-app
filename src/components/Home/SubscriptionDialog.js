@@ -5,12 +5,18 @@ import Chip from "material-ui/Chip";
 import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
 import { List, ListItem } from "material-ui/List";
+import SelectField from "material-ui/SelectField";
+import MenuItem from "material-ui/MenuItem";
 import ExpansionPanel from "../ExpansionPanel";
+// import moment from "moment";
+import moment from "moment-timezone";
 
 class DeliveryDialog extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      time: moment().format("HH:00"),
+      timezone: moment.tz.guess(),
       simpleMode: true,
       simple: {
         includeImages: true,
@@ -20,19 +26,32 @@ class DeliveryDialog extends React.Component {
     };
   }
 
+  handleTimeChange = (event, index, time) => this.setState({ time });
+
+  handleTimezoneChange = (event, index, timezone) =>
+    this.setState({ timezone });
+
   render() {
     if (this.state.simpleMode) {
-      const articlesCount = this.props.feeds
-        .map(feed => feed.unreadCount)
-        .reduce((a, b) => a + b, 0);
       const title =
         this.props.feeds.length === 1
-          ? "Deliver feed now"
-          : "Deliver " +
-            articlesCount +
-            " articles from " +
+          ? "Schedule daily deliveries"
+          : "Schedule daily deliveries of " +
             this.props.feeds.length +
             " feeds";
+
+      const timeItems = [].concat(
+        [...Array(24)].map((x, i) => (i < 10 ? "0" + i : i)).map(hour => {
+          return [
+            <MenuItem value={hour + ":00"} primaryText={hour + ":00"} />,
+            <MenuItem value={hour + ":30"} primaryText={hour + ":30"} />
+          ];
+        })
+      );
+
+      const timezones = moment.tz
+        .names()
+        .map(timezone => <MenuItem value={timezone} primaryText={timezone} />);
 
       return (
         <Dialog
@@ -45,7 +64,7 @@ class DeliveryDialog extends React.Component {
               onTouchTap={this.props.handleClose}
             />,
             <FlatButton
-              label="Deliver now"
+              label="Schedule"
               primary={true}
               keyboardFocused={true}
               onTouchTap={this.handleClose}
@@ -55,17 +74,28 @@ class DeliveryDialog extends React.Component {
           open={this.props.open}
           onRequestClose={this.props.handleClose}
         >
+          <SelectField
+            className="Home__timeSelect"
+            floatingLabelText="Delivery time"
+            value={this.state.time}
+            onChange={this.handleTimeChange}
+          >
+            {timeItems}
+          </SelectField>
+          <SelectField
+            className="Home__timezoneSelect"
+            floatingLabelText="Your timezone"
+            value={this.state.timezone}
+            onChange={this.handleTimezoneChange}
+          >
+            {timezones}
+          </SelectField>
           <List className="Home__feedList">
             {this.props.feeds.map(feed =>
               <ListItem
                 className="Home__feedListItem"
                 disabled
                 primaryText={feed.title}
-                rightAvatar={
-                  <Chip className="Home__feedListUnread" size={30}>
-                    {feed.unreadCount} new
-                  </Chip>
-                }
               />
             )}
           </List>

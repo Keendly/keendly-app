@@ -6,7 +6,6 @@ import Badge from "material-ui/Badge";
 import Checkbox from "material-ui/Checkbox";
 import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
-
 import Table, {
   TableBody,
   TableCell,
@@ -14,6 +13,8 @@ import Table, {
   TableRow
 } from "material-ui-next/Table";
 
+import DeliveryDialog from "./DeliveryDialog";
+import SubscriptionDialog from "./SubscriptionDialog";
 import "./Home.css";
 
 // https://material.io/guidelines/style/color.html#color-color-palette
@@ -58,7 +59,9 @@ class Home extends React.Component {
     this.state = {
       data: [],
       search_text: "",
-      selectedRows: []
+      selectedFeeds: [],
+      deliveryOpen: false,
+      subscriptionOpen: false
     };
     this.onSearchTextChanged = this.onSearchTextChanged.bind(this);
     this.handleDeliveryOpen = this.handleDeliveryOpen.bind(this);
@@ -101,27 +104,26 @@ class Home extends React.Component {
 
   onSelectAllClick(event, isInputChecked) {
     if (isInputChecked) {
-      const rows = this.state.data.map(item => item.feedId);
-      this.setState({ selectedRows: rows });
+      this.setState({ selectedFeeds: this.state.data });
     } else {
-      this.setState({ selectedRows: [] });
+      this.setState({ selectedFeeds: [] });
     }
   }
 
   onSelectClick(feed, isInputChecked) {
     if (isInputChecked) {
       this.setState((previousState, props) => {
-        previousState.selectedRows.push(feed.feedId);
+        previousState.selectedFeeds.push(feed);
         return {
-          selectedRows: previousState.selectedRows
+          selectedFeeds: previousState.selectedFeeds
         };
       });
     } else {
       this.setState((previousState, props) => {
-        const index = previousState.selectedRows.indexOf(feed.feedId);
-        previousState.selectedRows.splice(index, 1);
+        const index = previousState.selectedFeeds.indexOf(feed);
+        previousState.selectedFeeds.splice(index, 1);
         return {
-          selectedRows: previousState.selectedRows
+          selectedFeeds: previousState.selectedFeeds
         };
       });
     }
@@ -133,15 +135,21 @@ class Home extends React.Component {
     });
   }
 
-  handleDeliveryOpen() {
-    console.log(this.state.selectedRows);
-  }
+  handleDeliveryOpen = () => {
+    this.setState({ deliveryOpen: true });
+  };
 
-  handleDeliveryClose() {}
+  handleDeliveryClose = () => {
+    this.setState({ deliveryOpen: false });
+  };
 
-  handleSubscriptionOpen() {}
+  handleSubscriptionOpen = () => {
+    this.setState({ subscriptionOpen: true });
+  };
 
-  handleSubscriptionClose() {}
+  handleSubscriptionClose = () => {
+    this.setState({ subscriptionOpen: false });
+  };
 
   renderChip(data) {
     const color = this.categoryColor(data);
@@ -158,6 +166,8 @@ class Home extends React.Component {
   }
 
   render() {
+    const feedIds = this.state.selectedFeeds.map(feed => feed.feedId);
+
     return (
       <div className="Home__table">
         <div className="Home__buttons">
@@ -166,12 +176,24 @@ class Home extends React.Component {
             onTouchTap={this.handleDeliveryOpen}
             label="Deliver now"
             secondary={true}
+            disabled={this.state.selectedFeeds.length === 0}
           />
-
+          <DeliveryDialog
+            open={this.state.deliveryOpen}
+            handleClose={this.handleDeliveryClose}
+            feeds={this.state.selectedFeeds}
+          />
           <RaisedButton
             secondary={true}
             className="Home__button"
-            label="Schedule delivery"
+            onTouchTap={this.handleSubscriptionOpen}
+            label="Schedule deliveries"
+            disabled={this.state.selectedFeeds.length === 0}
+          />
+          <SubscriptionDialog
+            open={this.state.subscriptionOpen}
+            handleClose={this.handleSubscriptionClose}
+            feeds={this.state.selectedFeeds}
           />
 
           <TextField
@@ -188,7 +210,7 @@ class Home extends React.Component {
                   <Checkbox
                     onCheck={this.onSelectAllClick}
                     checked={
-                      this.state.selectedRows.length === this.state.data.length
+                      this.state.selectedFeeds.length === this.state.data.length
                     }
                   />
                 </TableCell>
@@ -197,11 +219,7 @@ class Home extends React.Component {
                 <TableCell>Next delivery</TableCell>
               </TableRow>
             </TableHead>
-            <TableBody
-              ref={tableBody => {
-                this.tableBody = tableBody;
-              }}
-            >
+            <TableBody>
               {this.state.data.map(
                 (feed, index) =>
                   (!this.state.search_text ||
@@ -213,9 +231,7 @@ class Home extends React.Component {
                       <Checkbox
                         onCheck={(event, isInputChecked) =>
                           this.onSelectClick(feed, isInputChecked)}
-                        checked={
-                          this.state.selectedRows.indexOf(feed.feedId) !== -1
-                        }
+                        checked={feedIds.indexOf(feed.feedId) !== -1}
                       />
                     </TableCell>
                     <TableCell>

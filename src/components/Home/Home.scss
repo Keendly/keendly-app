@@ -67,4 +67,41 @@
   &__search {
     float: right;
   }
+
+  &__feedList {
+    padding: 0px !important;
+  }
+
+  &__feedListItem {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 15px 20px !important;
+  }
+
+  &__feedListUnread {
+    background-color: #39b1c6 !important;
+    span {
+      color: white !important;
+    }
+  }
+  &__feedOption {
+    font-size: 15px;
+    opacity: .87;
+  }
+
+  &__timeSelect {
+    width: 50% !important;
+
+    label {
+      padding-left: 25px;
+    }
+
+    > div > div {
+      padding-left: 20px;
+      width: unset !important;
+    }
+  }
+
+  &__timezoneSelect {
+    width: 50% !important;
+  }
 }
