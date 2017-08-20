@@ -10,6 +10,7 @@ import {
   TableRowColumn
 } from "material-ui/Table";
 import Pagination from "../Pagination";
+import LinearProgress from "material-ui/LinearProgress";
 
 import "./Deliveries.css";
 
@@ -21,7 +22,7 @@ class Deliveries extends React.Component {
     this.state = {
       page: 1,
       data: [],
-      loaded: false
+      loading: false
     };
 
     this.handlePageChanged = this.handlePageChanged.bind(this);
@@ -32,7 +33,7 @@ class Deliveries extends React.Component {
   }
 
   componentDidMount() {
-    this.loadCommentsFromServer(1);
+    this.loadDeliveriesFromServer(1);
   }
 
   shouldComponentUpdate() {
@@ -41,10 +42,13 @@ class Deliveries extends React.Component {
 
   handlePageChanged(page) {
     this.setState({ page });
-    this.loadCommentsFromServer(page);
+    this.loadDeliveriesFromServer(page);
   }
 
-  loadCommentsFromServer(page) {
+  loadDeliveriesFromServer(page) {
+    this.setState({
+      loading: true
+    });
     fetch(
       this.props.url + "/deliveries?page=" + page + "&pageSize=" + PAGE_SIZE,
       {
@@ -56,40 +60,44 @@ class Deliveries extends React.Component {
       .then(response => response.json())
       .then(json => {
         this.setState({
-          data: json
+          data: json,
+          loading: false
         });
       });
   }
 
   render() {
     return (
-      <div className="Deliveries__table">
-        <Table selectable={false}>
-          <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
-            <TableRow>
-              <TableHeaderColumn>Feeds</TableHeaderColumn>
-              <TableHeaderColumn>Delivery date</TableHeaderColumn>
-            </TableRow>
-          </TableHeader>
-          <TableBody displayRowCheckbox={false}>
-            {this.state.data.map((delivery, index) =>
-              <TableRow key={index}>
-                <TableRowColumn>
-                  {delivery.items &&
-                    delivery.items.map(item => item.title).join(" \u2022 ")}
-                </TableRowColumn>
-                <TableRowColumn>
-                  {delivery.deliveryDate &&
-                    moment(delivery.deliveryDate).format("llll")}
-                </TableRowColumn>
+      <div className="Deliveries__wrapper">
+        {this.state.loading && <LinearProgress mode="indeterminate" />}
+        <div className="Deliveries__table">
+          <Table selectable={false}>
+            <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+              <TableRow>
+                <TableHeaderColumn>Feeds</TableHeaderColumn>
+                <TableHeaderColumn>Delivery date</TableHeaderColumn>
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
-        <Pagination
-          currentPage={this.state.page}
-          handlePageChange={this.handlePageChanged}
-        />
+            </TableHeader>
+            <TableBody displayRowCheckbox={false}>
+              {this.state.data.map((delivery, index) =>
+                <TableRow key={index}>
+                  <TableRowColumn>
+                    {delivery.items &&
+                      delivery.items.map(item => item.title).join(" \u2022 ")}
+                  </TableRowColumn>
+                  <TableRowColumn>
+                    {delivery.deliveryDate &&
+                      moment(delivery.deliveryDate).format("llll")}
+                  </TableRowColumn>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+          <Pagination
+            currentPage={this.state.page}
+            handlePageChange={this.handlePageChanged}
+          />
+        </div>
       </div>
     );
   }
