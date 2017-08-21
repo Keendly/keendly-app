@@ -11,6 +11,7 @@ import {
 } from "material-ui/Table";
 import Pagination from "../Pagination";
 import LinearProgress from "material-ui/LinearProgress";
+import Chip from "material-ui/Chip";
 
 import "./Deliveries.css";
 
@@ -66,6 +67,44 @@ class Deliveries extends React.Component {
       });
   }
 
+  status(delivery) {
+    if (delivery.deliveryDate) {
+      return "delivered";
+    }
+    if (delivery.error) {
+      if (delivery.error === "NO_ARTICLES") {
+        return "no articles";
+      } else {
+        return "failed";
+      }
+    } else {
+      if (moment(delivery.created).add(30, "minutes").isAfter(moment())) {
+        return "in progress";
+      } else {
+        return "failed";
+      }
+    }
+  }
+
+  statusChip(delivery) {
+    const status = this.status(delivery);
+    const color = {
+      delivered: "#C5E1A5",
+      failed: "#ef9a9a",
+      "in progress": "#81D4FA",
+      "no articles": "#BDBDBD"
+    }[status];
+
+    return (
+      <Chip
+        className="Deliveries__status"
+        style={{ "background-color": color }}
+      >
+        {status}
+      </Chip>
+    );
+  }
+
   render() {
     return (
       <div className="Deliveries__wrapper">
@@ -75,7 +114,12 @@ class Deliveries extends React.Component {
             <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
               <TableRow>
                 <TableHeaderColumn>Feeds</TableHeaderColumn>
-                <TableHeaderColumn>Delivery date</TableHeaderColumn>
+                <TableHeaderColumn style={{ width: "100px" }}>
+                  Status
+                </TableHeaderColumn>
+                <TableHeaderColumn style={{ width: "250px" }}>
+                  Delivery date
+                </TableHeaderColumn>
               </TableRow>
             </TableHeader>
             <TableBody displayRowCheckbox={false}>
@@ -85,7 +129,10 @@ class Deliveries extends React.Component {
                     {delivery.items &&
                       delivery.items.map(item => item.title).join(" \u2022 ")}
                   </TableRowColumn>
-                  <TableRowColumn>
+                  <TableRowColumn style={{ width: "100px" }}>
+                    {this.statusChip(delivery)}
+                  </TableRowColumn>
+                  <TableRowColumn style={{ width: "250px" }}>
                     {delivery.deliveryDate &&
                       moment(delivery.deliveryDate).format("llll")}
                   </TableRowColumn>
@@ -95,6 +142,7 @@ class Deliveries extends React.Component {
           </Table>
           <Pagination
             currentPage={this.state.page}
+            pageSize={PAGE_SIZE}
             handlePageChange={this.handlePageChanged}
           />
         </div>

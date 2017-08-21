@@ -3,9 +3,24 @@
     width: 75%;
     margin: auto;
     margin-top: 20px;
+    table {
+      font-family: "Roboto", "Helvetica", "Arial", sans-serif !important;
+    }
 
     > div {
       border-radius: 5px;
+    }
+
+    th {
+      font-weight: bold !important;
+      color: rgba(0, 0, 0, 0.54) !important;
+    }
+  }
+
+  &__status {
+    span {
+      font-size: 12px !important;
+      line-height: 25px !important;
     }
   }
 }
