@@ -1,0 +1,24 @@
+.Subscriptions {
+  &__table {
+    width: 75%;
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 10px;
+
+    > table {
+      border-radius: 5px;
+      background-color: white;
+    }
+  }
+
+  &__buttons {
+    margin-bottom: 10px;
+  }
+
+  &__status {
+    span {
+      font-size: 12px !important;
+      line-height: 25px !important;
+    }
+  }
+}

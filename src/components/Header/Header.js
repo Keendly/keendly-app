@@ -89,16 +89,15 @@ class Header extends React.Component {
               component={() =>
                 <Home token={this.props.token} url={this.props.url} />}
             />
-            <Route path="/subscriptions" component={Subscriptions} />
+            <Route
+              path="/subscriptions"
+              component={() =>
+                <Subscriptions token={this.props.token} url={this.props.url} />}
+            />
             <Route
               path="/deliveries"
               component={() =>
-                <Deliveries
-                  token={this.props.token}
-                  url={this.props.url}
-                  onEnter={() => this.setState({ showLoading: true })}
-                  hideLoading={() => this.setState({ showLoading: false })}
-                />}
+                <Deliveries token={this.props.token} url={this.props.url} />}
             />
             <Route path="/settings" component={Settings} />
           </div>

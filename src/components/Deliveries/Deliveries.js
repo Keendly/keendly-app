@@ -29,16 +29,8 @@ class Deliveries extends React.Component {
     this.handlePageChanged = this.handlePageChanged.bind(this);
   }
 
-  componentWillMout() {
-    // this.props.showLoading();
-  }
-
   componentDidMount() {
     this.loadDeliveriesFromServer(1);
-  }
-
-  shouldComponentUpdate() {
-    return !this.state.loaded;
   }
 
   handlePageChanged(page) {
