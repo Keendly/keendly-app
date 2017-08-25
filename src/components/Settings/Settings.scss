@@ -1,0 +1,30 @@
+@import "../../vars";
+
+.Settings {
+  &__content {
+    width: 75%;
+    margin: auto;
+  }
+
+  &__message {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+  }
+
+  &__info {
+    background-color: #bbdefb;
+    color: #0d47a1;
+  }
+
+  &__error {
+    color: #b71c1c;
+    background-color: #ffcdd2;
+  }
+
+  &__save {
+    button {
+      background-color: $primary !important;
+    }
+  }
+}

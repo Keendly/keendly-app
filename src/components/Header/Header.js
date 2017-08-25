@@ -99,7 +99,11 @@ class Header extends React.Component {
               component={() =>
                 <Deliveries token={this.props.token} url={this.props.url} />}
             />
-            <Route path="/settings" component={Settings} />
+            <Route
+              path="/settings"
+              component={() =>
+                <Settings token={this.props.token} url={this.props.url} />}
+            />
           </div>
         </div>
       </Router>

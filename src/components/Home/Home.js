@@ -78,6 +78,10 @@ class Home extends React.Component {
     this.loadFeedsFromServer();
   }
 
+  componentDidMount() {
+    document.title = "Home | Keendly";
+  }
+
   loadFeedsFromServer() {
     this.setState({
       loading: true

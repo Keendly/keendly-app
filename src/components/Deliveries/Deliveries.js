@@ -29,8 +29,12 @@ class Deliveries extends React.Component {
     this.handlePageChanged = this.handlePageChanged.bind(this);
   }
 
-  componentDidMount() {
+  componentWillMount() {
     this.loadDeliveriesFromServer(1);
+  }
+
+  componentDidMount() {
+    document.title = "History | Keendly";
   }
 
   handlePageChanged(page) {

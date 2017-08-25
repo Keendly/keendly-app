@@ -30,8 +30,12 @@ class Subscriptions extends React.Component {
     this.onSelectAllClick = this.onSelectAllClick.bind(this);
   }
 
-  componentDidMount() {
+  componentWillMount() {
     this.loadSubscriptionsFromServer(1);
+  }
+
+  componentDidMount() {
+    document.title = "Scheduled | Keendly";
   }
 
   handlePageChanged(page) {
@@ -94,6 +98,7 @@ class Subscriptions extends React.Component {
       <div className="Deliveries__wrapper">
         {this.state.loading && <LinearProgress mode="indeterminate" />}
         <div className="Subscriptions__table">
+          {this.state.data.length === 0 && <div>empty</div>}
           <div className="Subscriptions__buttons">
             <RaisedButton
               className="Subscription__delete"
