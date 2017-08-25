@@ -106,7 +106,7 @@ class Settings extends React.Component {
               <div className="Settings__message Settings__error">
                 {this.state.error}
               </div>}
-            {this.state.deliveryEmail &&
+            {this.state.data.deliverySender &&
               <div className="Settings__message Settings__info">
                 Make sure to add <b>{this.state.data.deliverySender}</b> to your{" "}
                 <b>Approved Personal Document E-mail List</b>, you can do it{" "}
