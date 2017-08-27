@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import Checkbox from "material-ui/Checkbox";
 import RaisedButton from "material-ui/RaisedButton";
+import FlatButton from "material-ui/FlatButton";
 import Table, {
   TableBody,
   TableCell,
@@ -11,6 +12,8 @@ import Table, {
 import Pagination from "../Pagination";
 import LinearProgress from "material-ui/LinearProgress";
 import Chip from "material-ui/Chip";
+import Dialog from "material-ui/Dialog";
+import Snackbar from "material-ui/Snackbar";
 
 import "./Subscriptions.css";
 
@@ -23,11 +26,15 @@ class Subscriptions extends React.Component {
       page: 1,
       data: [],
       selected: [],
-      loading: false
+      loading: false,
+      nothingSelectedDialogOpen: false,
+      snackbarOpen: false
     };
 
     this.handlePageChanged = this.handlePageChanged.bind(this);
     this.onSelectAllClick = this.onSelectAllClick.bind(this);
+    this.handleDeleteButtonClick = this.handleDeleteButtonClick.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
   }
 
   componentWillMount() {
@@ -91,6 +98,48 @@ class Subscriptions extends React.Component {
     }
   }
 
+  handleDeleteButtonClick() {
+    if (this.state.selected.length === 0) {
+      this.setState({
+        nothingSelectedDialogOpen: true
+      });
+    } else {
+      this.setState({
+        deleteConfirmationDialog: true
+      });
+    }
+  }
+
+  handleDelete() {
+    this.setState({
+      loading: true
+    });
+    Promise.all(
+      this.state.selected.map(s => {
+        fetch(this.props.url + "/subscriptions/" + s.id, {
+          headers: {
+            Authorization: this.props.token
+          },
+          method: "DELETE"
+        });
+      })
+    ).then(() => {
+      this.setState({
+        loading: false,
+        deleteConfirmationDialog: false,
+        snackbarOpen: true,
+        selected: []
+      });
+      this.loadSubscriptionsFromServer(1);
+    });
+  }
+
+  handleSnackbarClose = () => {
+    this.setState({
+      snackbarOpen: false
+    });
+  };
+
   render() {
     const ids = this.state.selected.map(s => s.id);
 
@@ -98,66 +147,123 @@ class Subscriptions extends React.Component {
       <div className="Deliveries__wrapper">
         {this.state.loading && <LinearProgress mode="indeterminate" />}
         <div className="Subscriptions__table">
-          {this.state.data.length === 0 && <div>empty</div>}
-          <div className="Subscriptions__buttons">
-            <RaisedButton
-              className="Subscription__delete"
-              onTouchTap={this.handleDeliveryOpen}
-              label="Delete"
-              secondary={true}
-            />
-          </div>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell checkbox>
-                  <Checkbox
-                    onCheck={this.onSelectAllClick}
-                    checked={
-                      this.state.selected.length === this.state.data.length
-                    }
-                  />
-                </TableCell>
-                <TableCell>Feeds</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Delivery time</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {this.state.data.map((subscription, index) =>
-                <TableRow key={index}>
-                  <TableCell checkbox>
-                    <Checkbox
-                      onCheck={(event, isInputChecked) =>
-                        this.onSelectClick(subscription, isInputChecked)}
-                      checked={ids.indexOf(subscription.id) !== -1}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {subscription.feeds &&
-                      subscription.feeds
-                        .map(item => item.title)
-                        .join(" \u2022 ")}
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      className="Subscriptions__status"
-                      style={{ "background-color": "#C5E1A5" }}
-                    >
-                      active
-                    </Chip>
-                  </TableCell>
-                  <TableCell>
-                    {subscription.time} ({subscription.timezone})
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-          <Pagination
-            currentPage={this.state.page}
-            pageSize={PAGE_SIZE}
-            handlePageChange={this.handlePageChanged}
+          {!this.state.loading &&
+            this.state.data.length === 0 &&
+            this.state.page === 1 &&
+            <div className="Subscriptions__message">
+              It seems that you do not have any deliveries scheduled. Go to{" "}
+              <a href="/">Home</a> to add one.
+            </div>}
+          {!this.state.loading &&
+            (this.state.data.length !== 0 || this.state.page > 1) &&
+            <div>
+              <div className="Subscriptions__buttons">
+                <RaisedButton
+                  className="Subscription__delete"
+                  onTouchTap={this.handleDeleteButtonClick}
+                  label="Delete"
+                  secondary={true}
+                />
+              </div>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell checkbox>
+                      <Checkbox
+                        onCheck={this.onSelectAllClick}
+                        checked={
+                          this.state.selected.length === this.state.data.length
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>Feeds</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Delivery time</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {this.state.data.map((subscription, index) =>
+                    <TableRow key={index}>
+                      <TableCell checkbox>
+                        <Checkbox
+                          onCheck={(event, isInputChecked) =>
+                            this.onSelectClick(subscription, isInputChecked)}
+                          checked={ids.indexOf(subscription.id) !== -1}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        {subscription.feeds &&
+                          subscription.feeds
+                            .map(item => item.title)
+                            .join(" \u2022 ")}
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          className="Subscriptions__status"
+                          style={{ "background-color": "#C5E1A5" }}
+                        >
+                          active
+                        </Chip>
+                      </TableCell>
+                      <TableCell>
+                        {subscription.time} ({subscription.timezone})
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+              <Pagination
+                currentPage={this.state.page}
+                pageSize={PAGE_SIZE}
+                handlePageChange={this.handlePageChanged}
+              />
+            </div>}
+          <Dialog
+            modal={false}
+            open={this.state.nothingSelectedDialogOpen}
+            onRequestClose={() => {
+              this.setState({
+                nothingSelectedDialogOpen: false
+              });
+            }}
+          >
+            Select scheduled delivery to remove
+          </Dialog>
+          <Dialog
+            title="Are you sure?"
+            actions={[
+              <FlatButton
+                label="No, cancel"
+                primary={true}
+                onClick={() => {
+                  this.setState({
+                    deleteConfirmationDialog: false
+                  });
+                }}
+              />,
+              <FlatButton
+                label="Yes, delete"
+                primary={true}
+                keyboardFocused={true}
+                onClick={this.handleDelete}
+              />
+            ]}
+            modal={false}
+            open={this.state.deleteConfirmationDialog}
+            onRequestClose={() => {
+              this.setState({
+                deleteConfirmationDialog: false
+              });
+            }}
+          >
+            Do you want to delete {this.state.selected.length} scheduled
+            {this.state.selected.length > 1 ? " deliveries" : " delivery"}
+          </Dialog>
+          <Snackbar
+            open={this.state.snackbarOpen}
+            message="Scheduled deliveries deleted"
+            autoHideDuration={4000}
+            onRequestClose={this.handleSnackbarClose}
           />
         </div>
       </div>

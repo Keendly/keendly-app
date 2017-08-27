@@ -105,42 +105,56 @@ class Deliveries extends React.Component {
     return (
       <div className="Deliveries__wrapper">
         {this.state.loading && <LinearProgress mode="indeterminate" />}
+
         <div className="Deliveries__table">
-          <Table selectable={false}>
-            <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
-              <TableRow>
-                <TableHeaderColumn>Feeds</TableHeaderColumn>
-                <TableHeaderColumn style={{ width: "100px" }}>
-                  Status
-                </TableHeaderColumn>
-                <TableHeaderColumn style={{ width: "250px" }}>
-                  Delivery date
-                </TableHeaderColumn>
-              </TableRow>
-            </TableHeader>
-            <TableBody displayRowCheckbox={false}>
-              {this.state.data.map((delivery, index) =>
-                <TableRow key={index}>
-                  <TableRowColumn>
-                    {delivery.items &&
-                      delivery.items.map(item => item.title).join(" \u2022 ")}
-                  </TableRowColumn>
-                  <TableRowColumn style={{ width: "100px" }}>
-                    {this.statusChip(delivery)}
-                  </TableRowColumn>
-                  <TableRowColumn style={{ width: "250px" }}>
-                    {delivery.deliveryDate &&
-                      moment(delivery.deliveryDate).format("llll")}
-                  </TableRowColumn>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-          <Pagination
-            currentPage={this.state.page}
-            pageSize={PAGE_SIZE}
-            handlePageChange={this.handlePageChanged}
-          />
+          {!this.state.loading &&
+            this.state.data.length === 0 &&
+            this.state.page === 1 &&
+            <div className="Deliveries__message">
+              Looks like your history is empty. Go to <a href="/">Home</a> to
+              send some articles to your Kindle.
+            </div>}
+          {!this.state.loading &&
+            (this.state.data.length !== 0 || this.state.page > 1) &&
+            <div>
+              <Table selectable={false}>
+                <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+                  <TableRow>
+                    <TableHeaderColumn>Feeds</TableHeaderColumn>
+                    <TableHeaderColumn style={{ width: "100px" }}>
+                      Status
+                    </TableHeaderColumn>
+                    <TableHeaderColumn style={{ width: "250px" }}>
+                      Delivery date
+                    </TableHeaderColumn>
+                  </TableRow>
+                </TableHeader>
+                <TableBody displayRowCheckbox={false}>
+                  {this.state.data.map((delivery, index) =>
+                    <TableRow key={index}>
+                      <TableRowColumn>
+                        {delivery.items &&
+                          delivery.items
+                            .map(item => item.title)
+                            .join(" \u2022 ")}
+                      </TableRowColumn>
+                      <TableRowColumn style={{ width: "100px" }}>
+                        {this.statusChip(delivery)}
+                      </TableRowColumn>
+                      <TableRowColumn style={{ width: "250px" }}>
+                        {delivery.deliveryDate &&
+                          moment(delivery.deliveryDate).format("llll")}
+                      </TableRowColumn>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+              <Pagination
+                currentPage={this.state.page}
+                pageSize={PAGE_SIZE}
+                handlePageChange={this.handlePageChanged}
+              />
+            </div>}
         </div>
       </div>
     );
