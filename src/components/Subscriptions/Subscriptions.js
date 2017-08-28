@@ -116,7 +116,7 @@ class Subscriptions extends React.Component {
     });
     Promise.all(
       this.state.selected.map(s => {
-        fetch(this.props.url + "/subscriptions/" + s.id, {
+        return fetch(this.props.url + "/subscriptions/" + s.id, {
           headers: {
             Authorization: this.props.token
           },

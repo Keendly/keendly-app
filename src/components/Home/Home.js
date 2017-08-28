@@ -76,6 +76,7 @@ class Home extends React.Component {
     this.handleSubscriptionClose = this.handleSubscriptionClose.bind(this);
     this.onSelectAllClick = this.onSelectAllClick.bind(this);
     this.handleDeliverNow = this.handleDeliverNow.bind(this);
+    this.handleSubscribe = this.handleSubscribe.bind(this);
     this.categoryColors = {};
   }
 
@@ -191,6 +192,7 @@ class Home extends React.Component {
           deliveryOpen: false,
           error: false
         });
+        this.loadFeedsFromServer();
       } else if (response.status === 400) {
         response.json().then(json => {
           this.setState({
@@ -214,6 +216,50 @@ class Home extends React.Component {
   handleSubscriptionClose = () => {
     this.setState({ subscriptionOpen: false });
   };
+
+  handleSubscribe(time, timezone, includeImages, extractArticle, markAsRead) {
+    fetch(this.props.url + "/subscriptions", {
+      headers: {
+        Authorization: this.props.token,
+        "Content-Type": "application/json"
+      },
+      method: "POST",
+      body: JSON.stringify({
+        time: time,
+        timezone: timezone,
+        feeds: this.state.selectedFeeds.map(f => {
+          return {
+            title: f.title,
+            feedId: f.feedId,
+            includeImages: includeImages,
+            fullArticle: extractArticle,
+            markAsRead: markAsRead
+          };
+        })
+      })
+    }).then(response => {
+      if (response.ok) {
+        this.setState({
+          subscriptionSnackbarOpen: true,
+          subscriptionOpen: false,
+          error: false
+        });
+        this.loadFeedsFromServer();
+      } else if (response.status === 400) {
+        response.json().then(json => {
+          this.setState({
+            error: json.description,
+            subscriptionOpen: false
+          });
+        });
+      } else {
+        this.setState({
+          error: "Error starting delivery, try again later",
+          subscriptionOpen: false
+        });
+      }
+    });
+  }
 
   renderChip(data) {
     const color = this.categoryColor(data);
@@ -263,6 +309,7 @@ class Home extends React.Component {
               <SubscriptionDialog
                 open={this.state.subscriptionOpen}
                 handleClose={this.handleSubscriptionClose}
+                handleSubscribe={this.handleSubscribe}
                 feeds={this.state.selectedFeeds}
               />
               <Dialog
@@ -345,10 +392,18 @@ class Home extends React.Component {
         <Snackbar
           open={this.state.deliverySnackbarOpen}
           message="Delivery started"
-          autoHideDuration={4000}
           onRequestClose={() => {
             this.setState({
               deliverySnackbarOpen: false
+            });
+          }}
+        />
+        <Snackbar
+          open={this.state.subscriptionSnackbarOpen}
+          message="Deliveries scheduled"
+          onRequestClose={() => {
+            this.setState({
+              subscriptionSnackbarOpen: false
             });
           }}
         />

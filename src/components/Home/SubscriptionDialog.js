@@ -67,7 +67,14 @@ class DeliveryDialog extends React.Component {
               label="Schedule"
               primary={true}
               keyboardFocused={true}
-              onTouchTap={this.handleClose}
+              onTouchTap={() =>
+                this.props.handleSubscribe(
+                  this.state.time,
+                  this.state.timezone,
+                  this.state.simple.includeImages,
+                  this.state.simple.extractArticle,
+                  this.state.simple.markAsRead
+                )}
             />
           ]}
           modal={false}
@@ -160,6 +167,7 @@ class DeliveryDialog extends React.Component {
 DeliveryDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
+  handleSubscribe: PropTypes.func.isRequired,
   feeds: PropTypes.array.isRequired
 };
 
