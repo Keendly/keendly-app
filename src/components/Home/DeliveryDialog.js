@@ -27,7 +27,7 @@ class DeliveryDialog extends React.Component {
         .reduce((a, b) => a + b, 0);
       const title =
         this.props.feeds.length === 1
-          ? "Deliver feed now"
+          ? "Deliver " + articlesCount + " articles"
           : "Deliver " +
             articlesCount +
             " articles from " +
@@ -48,7 +48,12 @@ class DeliveryDialog extends React.Component {
               label="Deliver now"
               primary={true}
               keyboardFocused={true}
-              onTouchTap={this.handleClose}
+              onTouchTap={() =>
+                this.props.handleDeliver(
+                  this.state.simple.includeImages,
+                  this.state.simple.extractArticle,
+                  this.state.simple.markAsRead
+                )}
             />
           ]}
           modal={false}
@@ -130,6 +135,7 @@ class DeliveryDialog extends React.Component {
 DeliveryDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
+  handleDeliver: PropTypes.func.isRequired,
   feeds: PropTypes.array.isRequired
 };
 

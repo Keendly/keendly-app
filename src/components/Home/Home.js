@@ -16,6 +16,9 @@ import LinearProgress from "material-ui/LinearProgress";
 
 import DeliveryDialog from "./DeliveryDialog";
 import SubscriptionDialog from "./SubscriptionDialog";
+import Snackbar from "material-ui/Snackbar";
+import Dialog from "material-ui/Dialog";
+
 import "./Home.css";
 
 // https://material.io/guidelines/style/color.html#color-color-palette
@@ -63,7 +66,8 @@ class Home extends React.Component {
       selectedFeeds: [],
       deliveryOpen: false,
       subscriptionOpen: false,
-      loading: false
+      loading: false,
+      deliverySnackbarOpen: false
     };
     this.onSearchTextChanged = this.onSearchTextChanged.bind(this);
     this.handleDeliveryOpen = this.handleDeliveryOpen.bind(this);
@@ -71,6 +75,7 @@ class Home extends React.Component {
     this.handleSubscriptionOpen = this.handleSubscriptionOpen.bind(this);
     this.handleSubscriptionClose = this.handleSubscriptionClose.bind(this);
     this.onSelectAllClick = this.onSelectAllClick.bind(this);
+    this.handleDeliverNow = this.handleDeliverNow.bind(this);
     this.categoryColors = {};
   }
 
@@ -146,12 +151,61 @@ class Home extends React.Component {
   }
 
   handleDeliveryOpen = () => {
-    this.setState({ deliveryOpen: true });
+    if (this.state.selectedFeeds.length === 0) {
+      this.setState({
+        nothingSelectedDialogOpen: true
+      });
+    } else {
+      this.setState({ deliveryOpen: true });
+    }
   };
 
   handleDeliveryClose = () => {
     this.setState({ deliveryOpen: false });
   };
+
+  handleDeliverNow(includeImages, extractArticle, markAsRead) {
+    fetch(this.props.url + "/deliveries", {
+      headers: {
+        Authorization: this.props.token,
+        "Content-Type": "application/json"
+      },
+      method: "POST",
+      body: JSON.stringify({
+        manual: true,
+        timezone: moment.tz.guess(),
+        items: this.state.selectedFeeds.map(f => {
+          return {
+            title: f.title,
+            feedId: f.feedId,
+            includeImages: includeImages,
+            fullArticle: extractArticle,
+            markAsRead: markAsRead
+          };
+        })
+      })
+    }).then(response => {
+      if (response.ok) {
+        this.setState({
+          deliverySnackbarOpen: true,
+          deliveryOpen: false,
+          error: false
+        });
+      } else if (response.status === 400) {
+        response.json().then(json => {
+          this.setState({
+            error: json.description,
+            deliveryOpen: false
+          });
+        });
+      } else {
+        this.setState({
+          error: "Error starting delivery, try again later",
+          deliveryOpen: false
+        });
+      }
+    });
+  }
 
   handleSubscriptionOpen = () => {
     this.setState({ subscriptionOpen: true });
@@ -181,99 +235,123 @@ class Home extends React.Component {
     return (
       <div className="Home__wrapper">
         {this.state.loading && <LinearProgress mode="indeterminate" />}
-        <div className="Home__table">
-          <div className="Home__buttons">
-            <RaisedButton
-              className="Home__button"
-              onTouchTap={this.handleDeliveryOpen}
-              label="Deliver now"
-              secondary={true}
-              disabled={this.state.selectedFeeds.length === 0}
-            />
-            <DeliveryDialog
-              open={this.state.deliveryOpen}
-              handleClose={this.handleDeliveryClose}
-              feeds={this.state.selectedFeeds}
-            />
-            <RaisedButton
-              secondary={true}
-              className="Home__button"
-              onTouchTap={this.handleSubscriptionOpen}
-              label="Schedule deliveries"
-              disabled={this.state.selectedFeeds.length === 0}
-            />
-            <SubscriptionDialog
-              open={this.state.subscriptionOpen}
-              handleClose={this.handleSubscriptionClose}
-              feeds={this.state.selectedFeeds}
-            />
-
-            <TextField
-              className="Home__search"
-              hintText="Search for feeds"
-              onChange={this.onSearchTextChanged}
-            />
-          </div>
-          {
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell checkbox>
-                    <Checkbox
-                      onCheck={this.onSelectAllClick}
-                      checked={
-                        this.state.selectedFeeds.length ===
-                        this.state.data.length
-                      }
-                    />
-                  </TableCell>
-                  <TableCell>Title</TableCell>
-                  <TableCell>Last delivery</TableCell>
-                  <TableCell>Next delivery</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {this.state.data.map(
-                  (feed, index) =>
-                    (!this.state.search_text ||
-                      feed.title
-                        .toLowerCase()
-                        .includes(this.state.search_text.toLowerCase())) &&
-                    <TableRow key={index} className="Home__feed_row">
-                      <TableCell checkbox>
-                        <Checkbox
-                          onCheck={(event, isInputChecked) =>
-                            this.onSelectClick(feed, isInputChecked)}
-                          checked={feedIds.indexOf(feed.feedId) !== -1}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <div className="Home__feed_title">
-                          <Badge
-                            badgeContent={
-                              feed.unreadCount > 99 ? "99+" : feed.unreadCount
-                            }
-                            className="Home__feed_badge"
-                          >
-                            {feed.title}
-                          </Badge>
-                        </div>
-                        {feed.categories &&
-                          feed.categories.map(this.renderChip, this)}
-                      </TableCell>
-                      <TableCell>
-                        {feed.lastDelivery &&
-                          moment(feed.lastDelivery.deliveryDate).fromNow()}
-                      </TableCell>
-                      <TableCell>
-                        {nextDelivery(feed.subscriptions)}
-                      </TableCell>
-                    </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          }
-        </div>
+        {!this.state.loading &&
+          <div className="Home__table">
+            {this.state.error &&
+              <div className="Home__message Home__error">
+                {this.state.error}
+              </div>}
+            <div className="Home__buttons">
+              <RaisedButton
+                className="Home__button"
+                onTouchTap={this.handleDeliveryOpen}
+                label="Deliver now"
+                secondary={true}
+              />
+              <DeliveryDialog
+                open={this.state.deliveryOpen}
+                handleClose={this.handleDeliveryClose}
+                handleDeliver={this.handleDeliverNow}
+                feeds={this.state.selectedFeeds}
+              />
+              <RaisedButton
+                secondary={true}
+                className="Home__button"
+                onTouchTap={this.handleSubscriptionOpen}
+                label="Schedule deliveries"
+              />
+              <SubscriptionDialog
+                open={this.state.subscriptionOpen}
+                handleClose={this.handleSubscriptionClose}
+                feeds={this.state.selectedFeeds}
+              />
+              <Dialog
+                modal={false}
+                open={this.state.nothingSelectedDialogOpen}
+                onRequestClose={() => {
+                  this.setState({
+                    nothingSelectedDialogOpen: false
+                  });
+                }}
+              >
+                First select feeds to deliver
+              </Dialog>
+              <TextField
+                className="Home__search"
+                hintText="Search for feeds"
+                onChange={this.onSearchTextChanged}
+              />
+            </div>
+            {
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell checkbox>
+                      <Checkbox
+                        onCheck={this.onSelectAllClick}
+                        checked={
+                          this.state.selectedFeeds.length ===
+                          this.state.data.length
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>Title</TableCell>
+                    <TableCell>Last delivery</TableCell>
+                    <TableCell>Next delivery</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {this.state.data.map(
+                    (feed, index) =>
+                      (!this.state.search_text ||
+                        feed.title
+                          .toLowerCase()
+                          .includes(this.state.search_text.toLowerCase())) &&
+                      <TableRow key={index} className="Home__feed_row">
+                        <TableCell checkbox>
+                          <Checkbox
+                            onCheck={(event, isInputChecked) =>
+                              this.onSelectClick(feed, isInputChecked)}
+                            checked={feedIds.indexOf(feed.feedId) !== -1}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <div className="Home__feed_title">
+                            <Badge
+                              badgeContent={
+                                feed.unreadCount > 99 ? "99+" : feed.unreadCount
+                              }
+                              className="Home__feed_badge"
+                            >
+                              {feed.title}
+                            </Badge>
+                          </div>
+                          {feed.categories &&
+                            feed.categories.map(this.renderChip, this)}
+                        </TableCell>
+                        <TableCell>
+                          {feed.lastDelivery &&
+                            moment(feed.lastDelivery.deliveryDate).fromNow()}
+                        </TableCell>
+                        <TableCell>
+                          {nextDelivery(feed.subscriptions)}
+                        </TableCell>
+                      </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            }
+          </div>}
+        <Snackbar
+          open={this.state.deliverySnackbarOpen}
+          message="Delivery started"
+          autoHideDuration={4000}
+          onRequestClose={() => {
+            this.setState({
+              deliverySnackbarOpen: false
+            });
+          }}
+        />
       </div>
     );
   }
