@@ -14,6 +14,10 @@ import PowerIcon from "material-ui/svg-icons/action/power-settings-new";
 import { Toolbar, ToolbarGroup, ToolbarSeparator } from "material-ui/Toolbar";
 
 import logo from "./logo_nav.png";
+import facebook from "./facebook.png";
+import twitter from "./twitter.png";
+import gmail from "./gmail.png";
+
 import Home from "../Home";
 import Settings from "../Settings";
 import Deliveries from "../Deliveries";
@@ -25,7 +29,7 @@ import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import "./App.css";
 
 const TOKEN =
-  "eyJhbGciOiJIUzUxMiJ9.eyJ1c2VySWQiOiIyIiwiZXhwIjoxNTA0NTM1OTMzfQ.SnYX9xBGhsT5VhsNlhI6mI-fJd6QduJVOj7AiNUyQgf3ROhFoJt_nFcs945OeReL7JvEETSnjRb4Z-llARIuBw";
+  "eyJhbGciOiJIUzUxMiJ9.eyJ1c2VySWQiOiIyIiwiZXhwIjoxNTA2NTQyMjAyfQ.3KUovoVxBHNfH-4mVElW--hxKwxEjrlLZ0eeThPpaJ19PqULxG_SsOgSzpg4YAxiChQcbADvJHQleN8Q-1qJew";
 const URL = "https://m1ndoce0cl.execute-api.eu-west-1.amazonaws.com/v1";
 
 class App extends Component {
@@ -39,7 +43,7 @@ class App extends Component {
     return (
       <MuiThemeProvider>
         <Router>
-          <div>
+          <div className="Wrapper">
             <Toolbar className="Header__toolbar">
               <ToolbarGroup firstChild>
                 <img className="Header__logo" src={logo} alt="logo" />
@@ -82,7 +86,7 @@ class App extends Component {
                 </IconMenu>
               </ToolbarGroup>
             </Toolbar>
-            <div>
+            <div className="Content">
               <Route
                 exact
                 path="/"
@@ -103,6 +107,48 @@ class App extends Component {
                 component={() =>
                   <Settings token={this.state.token} url={URL} />}
               />
+            </div>
+            <div className="Footer__wrapper">
+              <div className="Footer__content">
+                <div className="Footer__left">
+                  <a
+                    class="modal-trigger"
+                    id="contact_modal_btn"
+                    href="#contact"
+                  >
+                    LEAVE FEEDBACK
+                  </a>
+                  <a href="http://keendly.com" target="_blank">
+                    WEBSITE
+                  </a>
+                  <a href="http://blog.keendly.com" target="_blank">
+                    BLOG
+                  </a>
+                  <a
+                    href="https://keendly.myjetbrains.com/youtrack/agiles"
+                    target="_blank"
+                  >
+                    ISSUE TRACKER
+                  </a>
+                </div>
+                <div className="Footer__right">
+                  <div class="share-buttons">
+                    <a
+                      href="https://www.facebook.com/KeendlyApp/"
+                      target="_blank"
+                    >
+                      <img src={facebook} />
+                    </a>
+                    <a href="https://twitter.com/KeendlyApp" target="_blank">
+                      <img src={twitter} />
+                    </a>
+                    <a href="mailto:contact@keendly.com">
+                      <img src={gmail} />
+                    </a>
+                  </div>
+                  <div className="Footer__copyright">© 2017 Keendly</div>
+                </div>
+              </div>
             </div>
           </div>
         </Router>
