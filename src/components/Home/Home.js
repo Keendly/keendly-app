@@ -165,7 +165,7 @@ class Home extends React.Component {
     this.setState({ deliveryOpen: false });
   };
 
-  handleDeliverNow(includeImages, extractArticle, markAsRead) {
+  handleDeliverNow(includeImages, extractArticle, markAsRead, callback) {
     fetch(this.props.url + "/deliveries", {
       headers: {
         Authorization: this.props.token,
@@ -206,6 +206,7 @@ class Home extends React.Component {
           deliveryOpen: false
         });
       }
+      callback();
     });
   }
 
@@ -217,7 +218,14 @@ class Home extends React.Component {
     this.setState({ subscriptionOpen: false });
   };
 
-  handleSubscribe(time, timezone, includeImages, extractArticle, markAsRead) {
+  handleSubscribe(
+    time,
+    timezone,
+    includeImages,
+    extractArticle,
+    markAsRead,
+    callback
+  ) {
     fetch(this.props.url + "/subscriptions", {
       headers: {
         Authorization: this.props.token,
@@ -258,6 +266,7 @@ class Home extends React.Component {
           subscriptionOpen: false
         });
       }
+      callback();
     });
   }
 
@@ -366,7 +375,9 @@ class Home extends React.Component {
                           <div className="Home__feed_title">
                             <Badge
                               badgeContent={
-                                feed.unreadCount > 99 ? "99+" : feed.unreadCount
+                                feed.unreadCount > 99
+                                  ? "99+"
+                                  : feed.unreadCount ? feed.unreadCount : "0"
                               }
                               className="Home__feed_badge"
                             >

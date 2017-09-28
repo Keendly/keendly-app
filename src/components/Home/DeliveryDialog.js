@@ -5,6 +5,8 @@ import Chip from "material-ui/Chip";
 import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
 import { List, ListItem } from "material-ui/List";
+import LinearProgress from "material-ui/LinearProgress";
+import CircularProgress from "material-ui/CircularProgress";
 import ExpansionPanel from "../ExpansionPanel";
 
 class DeliveryDialog extends React.Component {
@@ -16,7 +18,8 @@ class DeliveryDialog extends React.Component {
         includeImages: true,
         extractArticle: true,
         markAsRead: true
-      }
+      },
+      loading: false
     };
   }
 
@@ -48,18 +51,27 @@ class DeliveryDialog extends React.Component {
               label="Deliver now"
               primary={true}
               keyboardFocused={true}
-              onTouchTap={() =>
+              onTouchTap={() => {
+                this.setState({
+                  loading: true
+                });
                 this.props.handleDeliver(
                   this.state.simple.includeImages,
                   this.state.simple.extractArticle,
-                  this.state.simple.markAsRead
-                )}
+                  this.state.simple.markAsRead,
+                  () =>
+                    this.setState({
+                      loading: false
+                    })
+                );
+              }}
             />
           ]}
           modal={false}
           open={this.props.open}
           onRequestClose={this.props.handleClose}
         >
+          {this.state.loading && <LinearProgress mode="indeterminate" />}
           <List className="Home__feedList">
             {this.props.feeds.map(feed =>
               <ListItem
@@ -68,7 +80,7 @@ class DeliveryDialog extends React.Component {
                 primaryText={feed.title}
                 rightAvatar={
                   <Chip className="Home__feedListUnread" size={30}>
-                    {feed.unreadCount} new
+                    {feed.unreadCount ? feed.unreadCount : "0"} new
                   </Chip>
                 }
               />

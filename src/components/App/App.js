@@ -22,9 +22,11 @@ import Home from "../Home";
 import Settings from "../Settings";
 import Deliveries from "../Deliveries";
 import Subscriptions from "../Subscriptions";
+import Login from "../Login";
 
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
+import PrivateRoute from "./PrivateRoute";
 
 import "./App.css";
 
@@ -44,112 +46,20 @@ class App extends Component {
       <MuiThemeProvider>
         <Router>
           <div className="Wrapper">
-            <Toolbar className="Header__toolbar">
-              <ToolbarGroup firstChild>
-                <img className="Header__logo" src={logo} alt="logo" />
-                <FlatButton
-                  label="Home"
-                  icon={<HomeIcon />}
-                  containerElement={<Link to="/" />}
-                />
-                <FlatButton
-                  label="Scheduled"
-                  icon={<TimerIcon />}
-                  containerElement={<Link to="/subscriptions" />}
-                />
-                <FlatButton
-                  label="History"
-                  icon={<ListIcon />}
-                  containerElement={<Link to="/deliveries" />}
-                />
-                <FlatButton
-                  label="Donate"
-                  backgroundColor="#5cb85c"
-                  icon={<LoyaltyIcon />}
-                />
-              </ToolbarGroup>
-              <ToolbarGroup lastChild>
-                <ToolbarSeparator />
-                <IconMenu
-                  iconButtonElement={
-                    <IconButton touch>
-                      <PersonIcon />
-                    </IconButton>
-                  }
-                >
-                  <MenuItem
-                    primaryText="Settings"
-                    containerElement={<Link to="/settings" />}
-                    leftIcon={<SettingsIcon />}
-                  />
-                  <MenuItem primaryText="Log out" leftIcon={<PowerIcon />} />
-                </IconMenu>
-              </ToolbarGroup>
-            </Toolbar>
-            <div className="Content">
-              <Route
-                exact
-                path="/"
-                component={() => <Home token={this.state.token} url={URL} />}
-              />
-              <Route
-                path="/subscriptions"
-                component={() =>
-                  <Subscriptions token={this.state.token} url={URL} />}
-              />
-              <Route
-                path="/deliveries"
-                component={() =>
-                  <Deliveries token={this.state.token} url={URL} />}
-              />
-              <Route
-                path="/settings"
-                component={() =>
-                  <Settings token={this.state.token} url={URL} />}
-              />
-            </div>
-            <div className="Footer__wrapper">
-              <div className="Footer__content">
-                <div className="Footer__left">
-                  <a
-                    class="modal-trigger"
-                    id="contact_modal_btn"
-                    href="#contact"
-                  >
-                    LEAVE FEEDBACK
-                  </a>
-                  <a href="http://keendly.com" target="_blank">
-                    WEBSITE
-                  </a>
-                  <a href="http://blog.keendly.com" target="_blank">
-                    BLOG
-                  </a>
-                  <a
-                    href="https://keendly.myjetbrains.com/youtrack/agiles"
-                    target="_blank"
-                  >
-                    ISSUE TRACKER
-                  </a>
-                </div>
-                <div className="Footer__right">
-                  <div class="share-buttons">
-                    <a
-                      href="https://www.facebook.com/KeendlyApp/"
-                      target="_blank"
-                    >
-                      <img src={facebook} />
-                    </a>
-                    <a href="https://twitter.com/KeendlyApp" target="_blank">
-                      <img src={twitter} />
-                    </a>
-                    <a href="mailto:contact@keendly.com">
-                      <img src={gmail} />
-                    </a>
-                  </div>
-                  <div className="Footer__copyright">© 2017 Keendly</div>
-                </div>
-              </div>
-            </div>
+            <Route exact path="/login" render={() => <Login url={URL} />} />
+            <PrivateRoute exact path="/" render={() => <Home url={URL} />} />
+            <PrivateRoute
+              path="/subscriptions"
+              render={() => <Subscriptions url={URL} />}
+            />
+            <PrivateRoute
+              path="/deliveries"
+              render={() => <Deliveries url={URL} />}
+            />
+            <PrivateRoute
+              path="/settings"
+              render={() => <Settings url={URL} />}
+            />
           </div>
         </Router>
       </MuiThemeProvider>

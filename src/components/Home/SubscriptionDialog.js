@@ -7,6 +7,7 @@ import FlatButton from "material-ui/FlatButton";
 import { List, ListItem } from "material-ui/List";
 import SelectField from "material-ui/SelectField";
 import MenuItem from "material-ui/MenuItem";
+import LinearProgress from "material-ui/LinearProgress";
 import ExpansionPanel from "../ExpansionPanel";
 // import moment from "moment";
 import moment from "moment-timezone";
@@ -67,20 +68,29 @@ class DeliveryDialog extends React.Component {
               label="Schedule"
               primary={true}
               keyboardFocused={true}
-              onTouchTap={() =>
+              onTouchTap={() => {
+                this.setState({
+                  loading: true
+                });
                 this.props.handleSubscribe(
                   this.state.time,
                   this.state.timezone,
                   this.state.simple.includeImages,
                   this.state.simple.extractArticle,
-                  this.state.simple.markAsRead
-                )}
+                  this.state.simple.markAsRead,
+                  () =>
+                    this.setState({
+                      loading: false
+                    })
+                );
+              }}
             />
           ]}
           modal={false}
           open={this.props.open}
           onRequestClose={this.props.handleClose}
         >
+          {this.state.loading && <LinearProgress mode="indeterminate" />}
           <SelectField
             className="Home__timeSelect"
             floatingLabelText="Delivery time"

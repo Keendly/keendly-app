@@ -1,0 +1,60 @@
+.Login {
+  &__logo {
+    text-align: center;
+    margin: 50px;
+  }
+
+  &__buttons {
+    margin-top: 20px;
+  }
+
+  &__error {
+    margin: auto;
+    background-color: #ffcdd2;
+    color: #b71c1c;
+    padding: 10px;
+    text-align: center;
+    width: 50%;
+    border-radius: 2px;
+  }
+
+  &__button {
+    color: white;
+    font-size: 16px;
+    line-height: 56px;
+    margin-bottom: 10px;
+    padding-left: 56px;
+    background-position: 14px 14px;
+    background-size: 28px 28px;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    text-decoration: none;
+    width: 244px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    font-family: sans-serif;
+    border-radius: 2px;
+  }
+
+  &__inoreader {
+    background-color: #30517e;
+    background-image: url("login_inoreader.png");
+  }
+
+  &__oldreader {
+    background-color: #30a67c;
+    background-image: url("login_oldreader.png");
+  }
+
+  &__newsblur {
+    background-color: #d37718;
+    background-image: url("login_newsblur.png");
+  }
+
+  &__feedly {
+    background-color: #87bd4d;
+    background-image: url("login_feedly.png");
+    opacity: .3;
+  }
+}
