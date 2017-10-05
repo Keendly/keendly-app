@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 import IconMenu from "material-ui/IconMenu";
 import IconButton from "material-ui/IconButton";
 import PersonIcon from "material-ui/svg-icons/social/person";
@@ -12,6 +11,8 @@ import LoyaltyIcon from "material-ui/svg-icons/action/loyalty";
 import SettingsIcon from "material-ui/svg-icons/action/settings";
 import PowerIcon from "material-ui/svg-icons/action/power-settings-new";
 import { Toolbar, ToolbarGroup, ToolbarSeparator } from "material-ui/Toolbar";
+import Drawer from 'material-ui/Drawer';
+import Responsive from 'react-responsive';
 
 import logo from "./logo_nav.png";
 import Home from "../Home";
@@ -25,14 +26,20 @@ import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import "./App.css";
 
 const TOKEN =
-  "eyJhbGciOiJIUzUxMiJ9.eyJ1c2VySWQiOiIyIiwiZXhwIjoxNTA0NTM1OTMzfQ.SnYX9xBGhsT5VhsNlhI6mI-fJd6QduJVOj7AiNUyQgf3ROhFoJt_nFcs945OeReL7JvEETSnjRb4Z-llARIuBw";
+  "eyJhbGciOiJIUzUxMiJ9.eyJ1c2VySWQiOiIyIiwiZXhwIjoxNTA0OTU3NDY1fQ.u4AXVQ1IIqdKpTMhk7RcaNY_Sdnk8FXnBMphtqYlUcpDU_1f50HY23BhdN_sF5st4evZVrzA991rhf_TjIZV7w";
 const URL = "https://m1ndoce0cl.execute-api.eu-west-1.amazonaws.com/v1";
+
+// Desktop, tablet and mobile setup
+const Desktop = ({ children }) => <Responsive minWidth={992} children={children} />;
+const Tablet = ({ children }) => <Responsive minWidth={768} maxWidth={992} children={children} />;
+const Mobile = ({ children }) => <Responsive maxWidth={768} children={children} />;
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      token: TOKEN
+      token: TOKEN,
+      drawerOpen: false
     };
   }
   render() {
@@ -41,46 +48,64 @@ class App extends Component {
         <Router>
           <div>
             <Toolbar className="Header__toolbar">
-              <ToolbarGroup firstChild>
-                <img className="Header__logo" src={logo} alt="logo" />
+              <Responsive maxWidth={992}>
                 <FlatButton
-                  label="Home"
-                  icon={<HomeIcon />}
-                  containerElement={<Link to="/" />}
+                    label="Open Drawer"
+                    onClick={() => this.setState({drawerOpen: !this.state.drawerOpen})}
+                    
                 />
-                <FlatButton
-                  label="Scheduled"
-                  icon={<TimerIcon />}
-                  containerElement={<Link to="/subscriptions" />}
-                />
-                <FlatButton
-                  label="History"
-                  icon={<ListIcon />}
-                  containerElement={<Link to="/deliveries" />}
-                />
-                <FlatButton
-                  label="Donate"
-                  backgroundColor="#5cb85c"
-                  icon={<LoyaltyIcon />}
-                />
-              </ToolbarGroup>
-              <ToolbarGroup lastChild>
-                <ToolbarSeparator />
-                <IconMenu
-                  iconButtonElement={
-                    <IconButton touch>
-                      <PersonIcon />
-                    </IconButton>
-                  }
+                <Drawer
+                    docked={false}
+                    width={200}
+                    open={this.state.drawerOpen}
+                    onRequestChange={(open) => this.setState({drawerOpen: open})}
                 >
-                  <MenuItem
-                    primaryText="Settings"
-                    containerElement={<Link to="/settings" />}
-                    leftIcon={<SettingsIcon />}
+                  <MenuItem onClick={this.handleClose}>Menu Item</MenuItem>
+                  <MenuItem onClick={this.handleClose}>Menu Item 2</MenuItem>
+                </Drawer>
+              </Responsive>
+              <Responsive minWidth={992}>
+                <ToolbarGroup firstChild>
+                  <img className="Header__logo" src={logo} alt="logo" />
+                  <FlatButton
+                      label="Home"
+                      icon={<HomeIcon />}
+                      containerElement={<Link to="/" />}
                   />
-                  <MenuItem primaryText="Log out" leftIcon={<PowerIcon />} />
-                </IconMenu>
-              </ToolbarGroup>
+                  <FlatButton
+                      label="Scheduled"
+                      icon={<TimerIcon />}
+                      containerElement={<Link to="/subscriptions" />}
+                  />
+                  <FlatButton
+                      label="History"
+                      icon={<ListIcon />}
+                      containerElement={<Link to="/deliveries" />}
+                  />
+                  <FlatButton
+                      label="Donate"
+                      backgroundColor="#5cb85c"
+                      icon={<LoyaltyIcon />}
+                  />
+                </ToolbarGroup>
+                <ToolbarGroup lastChild>
+                  <ToolbarSeparator />
+                  <IconMenu
+                      iconButtonElement={
+                        <IconButton touch>
+                          <PersonIcon />
+                        </IconButton>
+                      }
+                  >
+                    <MenuItem
+                        primaryText="Settings"
+                        containerElement={<Link to="/settings" />}
+                        leftIcon={<SettingsIcon />}
+                    />
+                    <MenuItem primaryText="Log out" leftIcon={<PowerIcon />} />
+                  </IconMenu>
+                </ToolbarGroup>
+              </Responsive>
             </Toolbar>
             <div>
               <Route
