@@ -58,6 +58,47 @@ class PrivateRoute extends React.Component {
     };
   }
 
+  footerLinks() {
+    return (
+      <div>
+        <a id="contact_modal_btn" href="#contact">
+          LEAVE FEEDBACK
+        </a>
+        <a href="http://keendly.com" target="_blank">
+          WEBSITE
+        </a>
+        <a href="http://blog.keendly.com" target="_blank">
+          BLOG
+        </a>
+        <a
+          href="https://keendly.myjetbrains.com/youtrack/agiles"
+          target="_blank"
+        >
+          ISSUE TRACKER
+        </a>
+      </div>
+    );
+  }
+
+  footerButtons() {
+    return (
+      <div>
+        <div class="share-buttons">
+          <a href="https://www.facebook.com/KeendlyApp/" target="_blank">
+            <img src={facebook} />
+          </a>
+          <a href="https://twitter.com/KeendlyApp" target="_blank">
+            <img src={twitter} />
+          </a>
+          <a href="mailto:contact@keendly.com">
+            <img src={gmail} />
+          </a>
+        </div>
+        <div className="Footer__copyright">© 2017 Keendly</div>
+      </div>
+    );
+  }
+
   render() {
     const { render: Component, ...rest } = this.props;
     const component = React.cloneElement(Component(), {
@@ -188,43 +229,26 @@ class PrivateRoute extends React.Component {
                 </div>
                 <div className="Footer__wrapper">
                   <div className="Footer__content">
-                    <div className="Footer__left">
-                      <a id="contact_modal_btn" href="#contact">
-                        LEAVE FEEDBACK
-                      </a>
-                      <a href="http://keendly.com" target="_blank">
-                        WEBSITE
-                      </a>
-                      <a href="http://blog.keendly.com" target="_blank">
-                        BLOG
-                      </a>
-                      <a
-                        href="https://keendly.myjetbrains.com/youtrack/agiles"
-                        target="_blank"
-                      >
-                        ISSUE TRACKER
-                      </a>
-                    </div>
-                    <div className="Footer__right">
-                      <div class="share-buttons">
-                        <a
-                          href="https://www.facebook.com/KeendlyApp/"
-                          target="_blank"
-                        >
-                          <img src={facebook} />
-                        </a>
-                        <a
-                          href="https://twitter.com/KeendlyApp"
-                          target="_blank"
-                        >
-                          <img src={twitter} />
-                        </a>
-                        <a href="mailto:contact@keendly.com">
-                          <img src={gmail} />
-                        </a>
+                    <AboveMobile>
+                      <div className="Footer__left">
+                        {this.footerLinks()}
                       </div>
-                      <div className="Footer__copyright">© 2017 Keendly</div>
-                    </div>
+                    </AboveMobile>
+                    <Mobile>
+                      <div className="Footer__list">
+                        {this.footerLinks()}
+                      </div>
+                    </Mobile>
+                    <AboveMobile>
+                      <div className="Footer__right">
+                        {this.footerButtons()}
+                      </div>
+                    </AboveMobile>
+                    <Mobile>
+                      <div className="Footer__small">
+                        {this.footerButtons()}
+                      </div>
+                    </Mobile>
                   </div>
                 </div>
               </div>
@@ -236,139 +260,5 @@ class PrivateRoute extends React.Component {
     );
   }
 }
-
-// const PrivateRoute = ({ render: Component, ...rest }) => {
-//   const component = React.cloneElement(Component(), {
-//     token: cookies.get(AUTH_KEY)
-//   });
-//   return (
-//     <Route
-//       {...rest}
-//       render={props => {
-//         console.log(props);
-//         return isLoggedIn()
-//           ? <div>
-//               <BelowDesktop>
-//                 <Toolbar className="Header__toolbar">
-//                   <ToolbarGroup firstChild>
-//                     <IconButton
-//                       onClick={() =>
-//                         this.setState({ drawerOpen: !this.state.drawerOpen })}
-//                     >
-//                       <Menu />
-//                     </IconButton>
-//                   </ToolbarGroup>
-//                   <ToolbarGroup>
-//                     <img className="Header__logo" src={logo} alt="logo" />
-//                   </ToolbarGroup>
-//                   <ToolbarGroup lastChild>
-//                     <FlatButton
-//                       label="Donate"
-//                       backgroundColor="#5cb85c"
-//                       icon={<LoyaltyIcon />}
-//                     />
-//                   </ToolbarGroup>
-//                 </Toolbar>
-//               </BelowDesktop>
-//               <Desktop>
-//                 <Toolbar className="Header__toolbar">
-//                   <ToolbarGroup firstChild>
-//                     <img className="Header__logo" src={logo} alt="logo" />
-//                     <FlatButton
-//                       label="Home"
-//                       icon={<HomeIcon />}
-//                       containerElement={<Link to="/" />}
-//                     />
-//                     <FlatButton
-//                       label="Scheduled"
-//                       icon={<TimerIcon />}
-//                       containerElement={<Link to="/subscriptions" />}
-//                     />
-//                     <FlatButton
-//                       label="History"
-//                       icon={<ListIcon />}
-//                       containerElement={<Link to="/deliveries" />}
-//                     />
-//                     <FlatButton
-//                       label="Donate"
-//                       backgroundColor="#5cb85c"
-//                       icon={<LoyaltyIcon />}
-//                     />
-//                   </ToolbarGroup>
-//                   <ToolbarGroup lastChild>
-//                     <ToolbarSeparator />
-//                     <IconMenu
-//                       iconButtonElement={
-//                         <IconButton touch>
-//                           <PersonIcon />
-//                         </IconButton>
-//                       }
-//                     >
-//                       <MenuItem
-//                         primaryText="Settings"
-//                         containerElement={<Link to="/settings" />}
-//                         leftIcon={<SettingsIcon />}
-//                       />
-//                       <MenuItem
-//                         primaryText="Log out"
-//                         leftIcon={<PowerIcon />}
-//                         onClick={() => {
-//                           cookies.remove(AUTH_KEY);
-//                           props.history.push("/login");
-//                         }}
-//                       />
-//                     </IconMenu>
-//                   </ToolbarGroup>
-//                 </Toolbar>
-//               </Desktop>
-//               <div className="Content">
-//                 {component}
-//               </div>
-//               <div className="Footer__wrapper">
-//                 <div className="Footer__content">
-//                   <div className="Footer__left">
-//                     <a id="contact_modal_btn" href="#contact">
-//                       LEAVE FEEDBACK
-//                     </a>
-//                     <a href="http://keendly.com" target="_blank">
-//                       WEBSITE
-//                     </a>
-//                     <a href="http://blog.keendly.com" target="_blank">
-//                       BLOG
-//                     </a>
-//                     <a
-//                       href="https://keendly.myjetbrains.com/youtrack/agiles"
-//                       target="_blank"
-//                     >
-//                       ISSUE TRACKER
-//                     </a>
-//                   </div>
-//                   <div className="Footer__right">
-//                     <div class="share-buttons">
-//                       <a
-//                         href="https://www.facebook.com/KeendlyApp/"
-//                         target="_blank"
-//                       >
-//                         <img src={facebook} />
-//                       </a>
-//                       <a href="https://twitter.com/KeendlyApp" target="_blank">
-//                         <img src={twitter} />
-//                       </a>
-//                       <a href="mailto:contact@keendly.com">
-//                         <img src={gmail} />
-//                       </a>
-//                     </div>
-//                     <div className="Footer__copyright">© 2017 Keendly</div>
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-//           : <Redirect
-//               to={{ pathname: "/login", state: { from: props.location } }}
-//             />;
-//       }}
-//     />
-//   );
-// };
 
 export default PrivateRoute;
