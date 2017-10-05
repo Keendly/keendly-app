@@ -1,2 +1,3 @@
 import Login from "./Login";
-export default Login;
+import LoginCallback from "./LoginCallback";
+export { LoginCallback, Login as default };

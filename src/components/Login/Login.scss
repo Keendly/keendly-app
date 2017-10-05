@@ -57,4 +57,9 @@
     background-image: url("login_feedly.png");
     opacity: .3;
   }
+
+  &__loading {
+    margin: auto;
+    width: 40px;
+  }
 }

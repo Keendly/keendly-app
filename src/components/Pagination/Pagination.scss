@@ -1,6 +1,7 @@
 .Pagination {
   &__wrapper {
     color: rgba(0, 0, 0, 0.54);
+    overflow: auto;
   }
 
   &__page {
