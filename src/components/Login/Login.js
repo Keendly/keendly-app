@@ -11,6 +11,14 @@ import { Redirect } from "react-router-dom";
 import logo from "./logo_login.png";
 import logo_small from "./logo_login_small.png";
 
+import {
+  Mobile,
+  Desktop,
+  Tablet,
+  AboveMobile,
+  BelowDesktop
+} from "../../breakpoints";
+
 import "./Login.css";
 
 const cookies = new Cookies();
@@ -167,9 +175,16 @@ class Login extends Component {
     }
     return (
       <div>
-        <div className="Login__logo">
-          <img src={logo} />
-        </div>
+        <AboveMobile>
+          <div className="Login__logo">
+            <img src={logo} />
+          </div>
+        </AboveMobile>
+        <Mobile>
+          <div className="Login__logo">
+            <img src={logo_small} />
+          </div>
+        </Mobile>
         {this.props.error &&
           <div className="Login__error">
             {this.props.error}

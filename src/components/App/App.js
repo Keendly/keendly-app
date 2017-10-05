@@ -1,16 +1,4 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
-import IconMenu from "material-ui/IconMenu";
-import IconButton from "material-ui/IconButton";
-import PersonIcon from "material-ui/svg-icons/social/person";
-import MenuItem from "material-ui/MenuItem";
-import FlatButton from "material-ui/FlatButton";
-import HomeIcon from "material-ui/svg-icons/action/home";
-import TimerIcon from "material-ui/svg-icons/image/timer";
-import ListIcon from "material-ui/svg-icons/action/list";
-import LoyaltyIcon from "material-ui/svg-icons/action/loyalty";
-import SettingsIcon from "material-ui/svg-icons/action/settings";
-import PowerIcon from "material-ui/svg-icons/action/power-settings-new";
 
 import Home from "../Home";
 import Settings from "../Settings";
