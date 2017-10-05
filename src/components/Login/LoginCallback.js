@@ -10,6 +10,14 @@ import logo_small from "./logo_login_small.png";
 
 import "./Login.css";
 
+import {
+  Mobile,
+  Desktop,
+  Tablet,
+  AboveMobile,
+  BelowDesktop
+} from "../../breakpoints";
+
 const cookies = new Cookies();
 
 class LoginCallback extends Component {
@@ -75,9 +83,16 @@ class LoginCallback extends Component {
     } else if (this.state.loading) {
       return (
         <div>
-          <div className="Login__logo">
-            <img src={logo} />
-          </div>
+          <AboveMobile>
+            <div className="Login__logo">
+              <img src={logo} />
+            </div>
+          </AboveMobile>
+          <Mobile>
+            <div className="Login__logo">
+              <img src={logo_small} />
+            </div>
+          </Mobile>
           <div className="Login__loading">
             {" "}<CircularProgress />{" "}
           </div>

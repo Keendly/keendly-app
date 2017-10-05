@@ -19,6 +19,14 @@ import SubscriptionDialog from "./SubscriptionDialog";
 import Snackbar from "material-ui/Snackbar";
 import Dialog from "material-ui/Dialog";
 
+import {
+  Mobile,
+  Desktop,
+  Tablet,
+  AboveMobile,
+  BelowDesktop
+} from "../../breakpoints";
+
 import "./Home.css";
 
 // https://material.io/guidelines/style/color.html#color-color-palette
@@ -332,11 +340,20 @@ class Home extends React.Component {
               >
                 First select feeds to deliver
               </Dialog>
-              <TextField
-                className="Home__search"
-                hintText="Search for feeds"
-                onChange={this.onSearchTextChanged}
-              />
+              <AboveMobile>
+                <TextField
+                  className="Home__search_right"
+                  hintText="Search for feeds"
+                  onChange={this.onSearchTextChanged}
+                />
+              </AboveMobile>
+              <Mobile>
+                <TextField
+                  className="Home__search_center"
+                  hintText="Search for feeds"
+                  onChange={this.onSearchTextChanged}
+                />
+              </Mobile>
             </div>
             {
               <Table>
@@ -352,8 +369,12 @@ class Home extends React.Component {
                       />
                     </TableCell>
                     <TableCell>Title</TableCell>
-                    <TableCell>Last delivery</TableCell>
-                    <TableCell>Next delivery</TableCell>
+                    <AboveMobile>
+                      <TableCell>Last delivery</TableCell>
+                    </AboveMobile>
+                    <Desktop>
+                      <TableCell>Next delivery</TableCell>
+                    </Desktop>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -387,13 +408,17 @@ class Home extends React.Component {
                           {feed.categories &&
                             feed.categories.map(this.renderChip, this)}
                         </TableCell>
-                        <TableCell>
-                          {feed.lastDelivery &&
-                            moment(feed.lastDelivery.deliveryDate).fromNow()}
-                        </TableCell>
-                        <TableCell>
-                          {nextDelivery(feed.subscriptions)}
-                        </TableCell>
+                        <AboveMobile>
+                          <TableCell>
+                            {feed.lastDelivery &&
+                              moment(feed.lastDelivery.deliveryDate).fromNow()}
+                          </TableCell>
+                        </AboveMobile>
+                        <Desktop>
+                          <TableCell>
+                            {nextDelivery(feed.subscriptions)}
+                          </TableCell>
+                        </Desktop>
                       </TableRow>
                   )}
                 </TableBody>

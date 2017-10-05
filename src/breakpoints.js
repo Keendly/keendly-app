@@ -7,8 +7,8 @@ export const Desktop = ({ children }) =>
 export const Tablet = ({ children }) =>
   <Responsive minWidth={768} maxWidth={992} children={children} />;
 export const Mobile = ({ children }) =>
-  <Responsive maxWidth={768} children={children} />;
+  <Responsive maxWidth={767} children={children} />;
 export const AboveMobile = ({ children }) =>
-  <Responsive minWidth={769} children={children} />;
+  <Responsive minWidth={768} children={children} />;
 export const BelowDesktop = ({ children }) =>
   <Responsive maxWidth={991} children={children} />;
