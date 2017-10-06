@@ -128,6 +128,8 @@ class PrivateRoute extends React.Component {
                         label="Donate"
                         backgroundColor="#5cb85c"
                         icon={<LoyaltyIcon />}
+                        className="dbox-donation-button"
+                        href="https://donorbox.org/keendly"
                       />
                     </ToolbarGroup>
                   </Toolbar>
@@ -196,6 +198,8 @@ class PrivateRoute extends React.Component {
                         label="Donate"
                         backgroundColor="#5cb85c"
                         icon={<LoyaltyIcon />}
+                        className="dbox-donation-button"
+                        href="https://donorbox.org/keendly"
                       />
                     </ToolbarGroup>
                     <ToolbarGroup lastChild>
