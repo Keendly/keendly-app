@@ -219,7 +219,13 @@ class Home extends React.Component {
   }
 
   handleSubscriptionOpen = () => {
-    this.setState({ subscriptionOpen: true });
+    if (this.state.selectedFeeds.length === 0) {
+      this.setState({
+        nothingSelectedDialogOpen: true
+      });
+    } else {
+      this.setState({ subscriptionOpen: true });
+    }
   };
 
   handleSubscriptionClose = () => {
