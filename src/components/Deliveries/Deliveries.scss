@@ -1,8 +1,9 @@
 .Deliveries {
   &__table {
-    width: 75%;
+    width: 85%;
     margin: auto;
     margin-top: 20px;
+    max-width: 1440px;
     table {
       font-family: "Roboto", "Helvetica", "Arial", sans-serif !important;
     }

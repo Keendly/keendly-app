@@ -6,8 +6,15 @@ import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
 import { List, ListItem } from "material-ui/List";
 import LinearProgress from "material-ui/LinearProgress";
-import CircularProgress from "material-ui/CircularProgress";
 import ExpansionPanel from "../ExpansionPanel";
+
+import {
+  Mobile,
+  Desktop,
+  Tablet,
+  AboveMobile,
+  BelowDesktop
+} from "../../breakpoints";
 
 class DeliveryDialog extends React.Component {
   constructor(props) {
@@ -74,16 +81,27 @@ class DeliveryDialog extends React.Component {
           {this.state.loading && <LinearProgress mode="indeterminate" />}
           <List className="Home__feedList">
             {this.props.feeds.map(feed =>
-              <ListItem
-                className="Home__feedListItem"
-                disabled
-                primaryText={feed.title}
-                rightAvatar={
-                  <Chip className="Home__feedListUnread" size={30}>
-                    {feed.unreadCount ? feed.unreadCount : "0"} new
-                  </Chip>
-                }
-              />
+              <div>
+                <AboveMobile>
+                  <ListItem
+                    className="Home__feedListItem"
+                    disabled
+                    primaryText={feed.title}
+                    rightAvatar={
+                      <Chip className="Home__feedListUnread" size={30}>
+                        {feed.unreadCount ? feed.unreadCount : "0"} new
+                      </Chip>
+                    }
+                  />
+                </AboveMobile>
+                <Mobile>
+                  <ListItem
+                    className="Home__feedListItem"
+                    disabled
+                    primaryText={feed.title}
+                  />
+                </Mobile>
+              </div>
             )}
           </List>
           <ExpansionPanel title="Options" expandedTitle="Expanded Title">

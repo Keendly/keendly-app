@@ -13,6 +13,14 @@ import Pagination from "../Pagination";
 import LinearProgress from "material-ui/LinearProgress";
 import Chip from "material-ui/Chip";
 
+import {
+  Mobile,
+  Desktop,
+  Tablet,
+  AboveMobile,
+  BelowDesktop
+} from "../../breakpoints";
+
 import "./Deliveries.css";
 
 const PAGE_SIZE = 20;
@@ -121,12 +129,12 @@ class Deliveries extends React.Component {
                 <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                   <TableRow>
                     <TableHeaderColumn>Feeds</TableHeaderColumn>
-                    <TableHeaderColumn style={{ width: "100px" }}>
-                      Status
-                    </TableHeaderColumn>
-                    <TableHeaderColumn style={{ width: "250px" }}>
-                      Delivery date
-                    </TableHeaderColumn>
+                    <AboveMobile>
+                      <TableHeaderColumn style={{ width: "100px" }}>
+                        Status
+                      </TableHeaderColumn>
+                    </AboveMobile>
+                    <TableHeaderColumn>Delivery date</TableHeaderColumn>
                   </TableRow>
                 </TableHeader>
                 <TableBody displayRowCheckbox={false}>
@@ -138,10 +146,12 @@ class Deliveries extends React.Component {
                             .map(item => item.title)
                             .join(" \u2022 ")}
                       </TableRowColumn>
-                      <TableRowColumn style={{ width: "100px" }}>
-                        {this.statusChip(delivery)}
-                      </TableRowColumn>
-                      <TableRowColumn style={{ width: "250px" }}>
+                      <AboveMobile>
+                        <TableRowColumn style={{ width: "100px" }}>
+                          {this.statusChip(delivery)}
+                        </TableRowColumn>
+                      </AboveMobile>
+                      <TableRowColumn>
                         {delivery.deliveryDate &&
                           moment(delivery.deliveryDate).format("llll")}
                       </TableRowColumn>

@@ -15,6 +15,14 @@ import Chip from "material-ui/Chip";
 import Dialog from "material-ui/Dialog";
 import Snackbar from "material-ui/Snackbar";
 
+import {
+  Mobile,
+  Desktop,
+  Tablet,
+  AboveMobile,
+  BelowDesktop
+} from "../../breakpoints";
+
 import "./Subscriptions.css";
 
 const PAGE_SIZE = 20;
@@ -144,7 +152,7 @@ class Subscriptions extends React.Component {
     const ids = this.state.selected.map(s => s.id);
 
     return (
-      <div className="Deliveries__wrapper">
+      <div className="Subscriptions3__wrapper">
         {this.state.loading && <LinearProgress mode="indeterminate" />}
         <div className="Subscriptions__table">
           {!this.state.loading &&
@@ -177,7 +185,9 @@ class Subscriptions extends React.Component {
                       />
                     </TableCell>
                     <TableCell>Feeds</TableCell>
-                    <TableCell>Status</TableCell>
+                    <AboveMobile>
+                      <TableCell>Status</TableCell>
+                    </AboveMobile>
                     <TableCell>Delivery time</TableCell>
                   </TableRow>
                 </TableHead>
@@ -192,21 +202,27 @@ class Subscriptions extends React.Component {
                         />
                       </TableCell>
                       <TableCell>
-                        {subscription.feeds &&
-                          subscription.feeds
-                            .map(item => item.title)
-                            .join(" \u2022 ")}
+                        <div className="Subscriptions__feeds">
+                          {subscription.feeds &&
+                            subscription.feeds
+                              .map(item => item.title)
+                              .join(" \u2022 ")}
+                        </div>
                       </TableCell>
+                      <AboveMobile>
+                        <TableCell>
+                          <Chip
+                            className="Subscriptions__status"
+                            style={{ "background-color": "#C5E1A5" }}
+                          >
+                            active
+                          </Chip>
+                        </TableCell>
+                      </AboveMobile>
                       <TableCell>
-                        <Chip
-                          className="Subscriptions__status"
-                          style={{ "background-color": "#C5E1A5" }}
-                        >
-                          active
-                        </Chip>
-                      </TableCell>
-                      <TableCell>
-                        {subscription.time} ({subscription.timezone})
+                        <div className="Subscriptions__time">
+                          {subscription.time} ({subscription.timezone})
+                        </div>
                       </TableCell>
                     </TableRow>
                   )}
