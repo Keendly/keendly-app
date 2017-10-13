@@ -13,6 +13,8 @@ import SettingsIcon from "material-ui/svg-icons/action/settings";
 import PowerIcon from "material-ui/svg-icons/action/power-settings-new";
 import Menu from "material-ui/svg-icons/navigation/menu";
 import { Toolbar, ToolbarGroup, ToolbarSeparator } from "material-ui/Toolbar";
+import Dialog from "material-ui/Dialog";
+import TextField from "material-ui/TextField";
 import Cookies from "universal-cookie";
 
 import Drawer from "material-ui/Drawer";
@@ -54,14 +56,75 @@ class PrivateRoute extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      drawerOpen: false
+      drawerOpen: false,
+      feedbackOpen: false
     };
+
+    this.handleFeedbackSubmit = this.handleFeedbackSubmit.bind(this);
+    this.handleFeedbackEmailChange = this.handleFeedbackEmailChange.bind(this);
+    this.handleFeedbackMessageChange = this.handleFeedbackMessageChange.bind(
+      this
+    );
+  }
+
+  handleFeedbackSubmit() {
+    fetch(this.props.url + "/login", {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: this.state.feedbackEmail,
+        message: this.state.feedbackMessage
+      })
+    })
+      .then(response => {
+        if (response.ok) {
+          this.setState({
+            feedbackOpen: false
+          });
+        } else {
+          this.setState({
+            error: "Login error, please try again",
+            oldreaderOpen: false,
+            loading: false
+          });
+        }
+      })
+      .catch(error => {
+        this.setState({
+          error: "Login error, please try again",
+          oldreaderOpen: false,
+          loading: false
+        });
+      });
+    console.log(this.state.feedbackEmail);
+    console.log(this.state.feedbackMessage);
+  }
+
+  handleFeedbackEmailChange(event) {
+    this.setState({
+      feedbackEmail: event.target.value
+    });
+  }
+
+  handleFeedbackMessageChange(event) {
+    this.setState({
+      feedbackMessage: event.target.value
+    });
   }
 
   footerLinks() {
     return (
       <div>
-        <a id="contact_modal_btn" href="#contact">
+        <a
+          className="Footer__feedback"
+          onClick={() => {
+            this.setState({
+              feedbackOpen: true
+            });
+          }}
+        >
           LEAVE FEEDBACK
         </a>
         <a href="http://keendly.com" target="_blank">
@@ -255,6 +318,46 @@ class PrivateRoute extends React.Component {
                     </Mobile>
                   </div>
                 </div>
+                <Dialog
+                  title="Leave feedback"
+                  actions={[
+                    <FlatButton
+                      label="Cancel"
+                      primary={true}
+                      onClick={() => {
+                        this.setState({
+                          feedbackOpen: false
+                        });
+                      }}
+                    />,
+                    <FlatButton
+                      label="Send"
+                      primary={true}
+                      keyboardFocused={true}
+                      onClick={this.handleFeedbackSubmit}
+                    />
+                  ]}
+                  modal={false}
+                  open={this.state.feedbackOpen}
+                  onRequestClose={() => {
+                    this.setState({
+                      feedbackOpen: false
+                    });
+                  }}
+                >
+                  <TextField
+                    hintText="Your email"
+                    fullWidth={true}
+                    onChange={this.handleFeedbackEmailChange}
+                  />
+                  <TextField
+                    hintText="Message"
+                    fullWidth={true}
+                    onChange={this.handleFeedbackMessageChange}
+                    multiLine={true}
+                    rows={3}
+                  />
+                </Dialog>
               </div>
             : <Redirect
                 to={{ pathname: "/login", state: { from: props.location } }}
