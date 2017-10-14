@@ -57,7 +57,9 @@ class PrivateRoute extends React.Component {
     super(props);
     this.state = {
       drawerOpen: false,
-      feedbackOpen: false
+      feedbackOpen: false,
+      feedbackSuccess: false,
+      feedbackError: false
     };
 
     this.handleFeedbackSubmit = this.handleFeedbackSubmit.bind(this);
@@ -68,7 +70,7 @@ class PrivateRoute extends React.Component {
   }
 
   handleFeedbackSubmit() {
-    fetch(this.props.url + "/login", {
+    fetch("//formspree.io/contact@keendly.com", {
       method: "post",
       headers: {
         "Content-Type": "application/json"
@@ -81,25 +83,19 @@ class PrivateRoute extends React.Component {
       .then(response => {
         if (response.ok) {
           this.setState({
-            feedbackOpen: false
+            feedbackSuccess: true
           });
         } else {
           this.setState({
-            error: "Login error, please try again",
-            oldreaderOpen: false,
-            loading: false
+            feedbackError: true
           });
         }
       })
       .catch(error => {
         this.setState({
-          error: "Login error, please try again",
-          oldreaderOpen: false,
-          loading: false
+          feedbackError: true
         });
       });
-    console.log(this.state.feedbackEmail);
-    console.log(this.state.feedbackMessage);
   }
 
   handleFeedbackEmailChange(event) {
@@ -167,6 +163,37 @@ class PrivateRoute extends React.Component {
     const component = React.cloneElement(Component(), {
       token: cookies.get(AUTH_KEY)
     });
+
+    const feedbackActions =
+      !this.state.feedbackError && !this.state.feedbackSuccess
+        ? [
+            <FlatButton
+              label="Cancel"
+              primary={true}
+              onClick={() => {
+                this.setState({
+                  feedbackOpen: false
+                });
+              }}
+            />,
+            <FlatButton
+              label="Send"
+              primary={true}
+              keyboardFocused={true}
+              onClick={this.handleFeedbackSubmit}
+            />
+          ]
+        : [
+            <FlatButton
+              label="Close"
+              primary={true}
+              onClick={() => {
+                this.setState({
+                  feedbackOpen: false
+                });
+              }}
+            />
+          ];
     return (
       <Route
         {...rest}
@@ -320,23 +347,39 @@ class PrivateRoute extends React.Component {
                 </div>
                 <Dialog
                   title="Leave feedback"
-                  actions={[
-                    <FlatButton
-                      label="Cancel"
-                      primary={true}
-                      onClick={() => {
-                        this.setState({
-                          feedbackOpen: false
-                        });
-                      }}
-                    />,
-                    <FlatButton
-                      label="Send"
-                      primary={true}
-                      keyboardFocused={true}
-                      onClick={this.handleFeedbackSubmit}
-                    />
-                  ]}
+                  actions={
+                    !this.state.feedbackError && !this.state.feedbackSuccess
+                      ? [
+                          <FlatButton
+                            label="Cancel"
+                            primary={true}
+                            onClick={() => {
+                              this.setState({
+                                feedbackOpen: false
+                              });
+                            }}
+                          />,
+                          <FlatButton
+                            label="Send"
+                            primary={true}
+                            keyboardFocused={true}
+                            onClick={this.handleFeedbackSubmit}
+                          />
+                        ]
+                      : [
+                          <FlatButton
+                            label="Close"
+                            primary={true}
+                            onClick={() => {
+                              this.setState({
+                                feedbackOpen: false,
+                                feedbackSuccess: false,
+                                feedbackError: false
+                              });
+                            }}
+                          />
+                        ]
+                  }
                   modal={false}
                   open={this.state.feedbackOpen}
                   onRequestClose={() => {
@@ -345,18 +388,31 @@ class PrivateRoute extends React.Component {
                     });
                   }}
                 >
-                  <TextField
-                    hintText="Your email"
-                    fullWidth={true}
-                    onChange={this.handleFeedbackEmailChange}
-                  />
-                  <TextField
-                    hintText="Message"
-                    fullWidth={true}
-                    onChange={this.handleFeedbackMessageChange}
-                    multiLine={true}
-                    rows={3}
-                  />
+                  {!this.state.feedbackError &&
+                    !this.state.feedbackSuccess &&
+                    <div>
+                      <TextField
+                        hintText="Your email"
+                        fullWidth={true}
+                        onChange={this.handleFeedbackEmailChange}
+                      />
+                      <TextField
+                        hintText="Message"
+                        fullWidth={true}
+                        onChange={this.handleFeedbackMessageChange}
+                        multiLine={true}
+                        rows={3}
+                      />
+                    </div>}
+                  {this.state.feedbackSuccess &&
+                    <div>Email sent, thank you for your feedback! </div>}
+                  {this.state.feedbackError &&
+                    <div>
+                      Error occured :-(, please send your feedback to{" "}
+                      <a href="mailto:contact@keendly.com" target="_top">
+                        contact@keendly.com
+                      </a>
+                    </div>}
                 </Dialog>
               </div>
             : <Redirect
