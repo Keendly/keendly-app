@@ -10,4 +10,5 @@ jobs:
       - checkout
       - run: npm install
       - run: npm run build
+      - run: pip install awscli --upgrade --user
       - run: aws s3 sync build s3://app.keendly.com/ --delete
