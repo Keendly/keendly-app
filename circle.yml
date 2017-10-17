@@ -1,6 +1,6 @@
 machine:
   node:
-    version: oraclejdk8
+    version: v6.1.0
 
 deployment:
   master:
