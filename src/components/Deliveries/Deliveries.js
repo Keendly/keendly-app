@@ -1,27 +1,21 @@
-import React from "react";
-import PropTypes from "prop-types";
-import moment from "moment";
+import React from 'react';
+import PropTypes from 'prop-types';
+import moment from 'moment';
 import {
   Table,
   TableBody,
   TableHeader,
   TableHeaderColumn,
   TableRow,
-  TableRowColumn
-} from "material-ui/Table";
-import Pagination from "../Pagination";
-import LinearProgress from "material-ui/LinearProgress";
-import Chip from "material-ui/Chip";
+  TableRowColumn,
+} from 'material-ui/Table';
+import Pagination from '../Pagination';
+import LinearProgress from 'material-ui/LinearProgress';
+import Chip from 'material-ui/Chip';
 
-import {
-  Mobile,
-  Desktop,
-  Tablet,
-  AboveMobile,
-  BelowDesktop
-} from "../../breakpoints";
+import {AboveMobile} from '../../breakpoints';
 
-import "./Deliveries.css";
+import './Deliveries.css';
 
 const PAGE_SIZE = 20;
 
@@ -31,7 +25,7 @@ class Deliveries extends React.Component {
     this.state = {
       page: 1,
       data: [],
-      loading: false
+      loading: false,
     };
 
     this.handlePageChanged = this.handlePageChanged.bind(this);
@@ -42,50 +36,54 @@ class Deliveries extends React.Component {
   }
 
   componentDidMount() {
-    document.title = "History | Keendly";
+    document.title = 'History | Keendly';
   }
 
   handlePageChanged(page) {
-    this.setState({ page });
+    this.setState({page});
     this.loadDeliveriesFromServer(page);
   }
 
   loadDeliveriesFromServer(page) {
     this.setState({
-      loading: true
+      loading: true,
     });
     fetch(
-      this.props.url + "/deliveries?page=" + page + "&pageSize=" + PAGE_SIZE,
+      this.props.url + '/deliveries?page=' + page + '&pageSize=' + PAGE_SIZE,
       {
         headers: {
-          Authorization: this.props.token
-        }
+          Authorization: this.props.token,
+        },
       }
     )
       .then(response => response.json())
       .then(json => {
         this.setState({
           data: json,
-          loading: false
+          loading: false,
         });
       });
   }
 
   status(delivery) {
     if (delivery.deliveryDate) {
-      return "delivered";
+      return 'delivered';
     }
     if (delivery.error) {
-      if (delivery.error === "NO_ARTICLES") {
-        return "no articles";
+      if (delivery.error === 'NO_ARTICLES') {
+        return 'no articles';
       } else {
-        return "failed";
+        return 'failed';
       }
     } else {
-      if (moment(delivery.created).add(30, "minutes").isAfter(moment())) {
-        return "in progress";
+      if (
+        moment(delivery.created)
+          .add(30, 'minutes')
+          .isAfter(moment())
+      ) {
+        return 'in progress';
       } else {
-        return "failed";
+        return 'failed';
       }
     }
   }
@@ -93,17 +91,14 @@ class Deliveries extends React.Component {
   statusChip(delivery) {
     const status = this.status(delivery);
     const color = {
-      delivered: "#C5E1A5",
-      failed: "#ef9a9a",
-      "in progress": "#81D4FA",
-      "no articles": "#BDBDBD"
+      delivered: '#C5E1A5',
+      failed: '#ef9a9a',
+      'in progress': '#81D4FA',
+      'no articles': '#BDBDBD',
     }[status];
 
     return (
-      <Chip
-        className="Deliveries__status"
-        style={{ "background-color": color }}
-      >
+      <Chip className="Deliveries__status" style={{'background-color': color}}>
         {status}
       </Chip>
     );
@@ -117,54 +112,59 @@ class Deliveries extends React.Component {
         <div className="Deliveries__table">
           {!this.state.loading &&
             this.state.data.length === 0 &&
-            this.state.page === 1 &&
-            <div className="Deliveries__message">
-              Looks like your history is empty. Go to <a href="/">Home</a> to
-              send some articles to your Kindle.
-            </div>}
+            this.state.page === 1 && (
+              <div className="Deliveries__message">
+                Looks like your history is empty. Go to <a href="/">Home</a> to
+                send some articles to your Kindle.
+              </div>
+            )}
           {!this.state.loading &&
-            (this.state.data.length !== 0 || this.state.page > 1) &&
-            <div>
-              <Table selectable={false}>
-                <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
-                  <TableRow>
-                    <TableHeaderColumn>Feeds</TableHeaderColumn>
-                    <AboveMobile>
-                      <TableHeaderColumn style={{ width: "100px" }}>
-                        Status
-                      </TableHeaderColumn>
-                    </AboveMobile>
-                    <TableHeaderColumn>Delivery date</TableHeaderColumn>
-                  </TableRow>
-                </TableHeader>
-                <TableBody displayRowCheckbox={false}>
-                  {this.state.data.map((delivery, index) =>
-                    <TableRow key={index}>
-                      <TableRowColumn>
-                        {delivery.items &&
-                          delivery.items
-                            .map(item => item.title)
-                            .join(" \u2022 ")}
-                      </TableRowColumn>
+            (this.state.data.length !== 0 || this.state.page > 1) && (
+              <div>
+                <Table selectable={false}>
+                  <TableHeader
+                    displaySelectAll={false}
+                    adjustForCheckbox={false}
+                  >
+                    <TableRow>
+                      <TableHeaderColumn>Feeds</TableHeaderColumn>
                       <AboveMobile>
-                        <TableRowColumn style={{ width: "100px" }}>
-                          {this.statusChip(delivery)}
-                        </TableRowColumn>
+                        <TableHeaderColumn style={{width: '100px'}}>
+                          Status
+                        </TableHeaderColumn>
                       </AboveMobile>
-                      <TableRowColumn>
-                        {delivery.deliveryDate &&
-                          moment(delivery.deliveryDate).format("llll")}
-                      </TableRowColumn>
+                      <TableHeaderColumn>Delivery date</TableHeaderColumn>
                     </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-              <Pagination
-                currentPage={this.state.page}
-                pageSize={PAGE_SIZE}
-                handlePageChange={this.handlePageChanged}
-              />
-            </div>}
+                  </TableHeader>
+                  <TableBody displayRowCheckbox={false}>
+                    {this.state.data.map((delivery, index) => (
+                      <TableRow key={index}>
+                        <TableRowColumn>
+                          {delivery.items &&
+                            delivery.items
+                              .map(item => item.title)
+                              .join(' \u2022 ')}
+                        </TableRowColumn>
+                        <AboveMobile>
+                          <TableRowColumn style={{width: '100px'}}>
+                            {this.statusChip(delivery)}
+                          </TableRowColumn>
+                        </AboveMobile>
+                        <TableRowColumn>
+                          {delivery.deliveryDate &&
+                            moment(delivery.deliveryDate).format('llll')}
+                        </TableRowColumn>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                <Pagination
+                  currentPage={this.state.page}
+                  pageSize={PAGE_SIZE}
+                  handlePageChange={this.handlePageChanged}
+                />
+              </div>
+            )}
         </div>
       </div>
     );
@@ -173,7 +173,7 @@ class Deliveries extends React.Component {
 
 Deliveries.propTypes = {
   token: PropTypes.string.isRequired,
-  url: PropTypes.string.isRequired
+  url: PropTypes.string.isRequired,
 };
 
 export default Deliveries;

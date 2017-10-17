@@ -1,20 +1,14 @@
-import React from "react";
-import PropTypes from "prop-types";
-import Checkbox from "material-ui/Checkbox";
-import Chip from "material-ui/Chip";
-import Dialog from "material-ui/Dialog";
-import FlatButton from "material-ui/FlatButton";
-import { List, ListItem } from "material-ui/List";
-import LinearProgress from "material-ui/LinearProgress";
-import ExpansionPanel from "../ExpansionPanel";
+import React from 'react';
+import PropTypes from 'prop-types';
+import Checkbox from 'material-ui/Checkbox';
+import Chip from 'material-ui/Chip';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import {List, ListItem} from 'material-ui/List';
+import LinearProgress from 'material-ui/LinearProgress';
+import ExpansionPanel from '../ExpansionPanel';
 
-import {
-  Mobile,
-  Desktop,
-  Tablet,
-  AboveMobile,
-  BelowDesktop
-} from "../../breakpoints";
+import {Mobile, AboveMobile} from '../../breakpoints';
 
 class DeliveryDialog extends React.Component {
   constructor(props) {
@@ -24,9 +18,9 @@ class DeliveryDialog extends React.Component {
       simple: {
         includeImages: true,
         extractArticle: true,
-        markAsRead: true
+        markAsRead: true,
       },
-      loading: false
+      loading: false,
     };
   }
 
@@ -37,12 +31,12 @@ class DeliveryDialog extends React.Component {
         .reduce((a, b) => a + b, 0);
       const title =
         this.props.feeds.length === 1
-          ? "Deliver " + articlesCount + " articles"
-          : "Deliver " +
+          ? 'Deliver ' + articlesCount + ' articles'
+          : 'Deliver ' +
             articlesCount +
-            " articles from " +
+            ' articles from ' +
             this.props.feeds.length +
-            " feeds";
+            ' feeds';
 
       return (
         <Dialog
@@ -60,7 +54,7 @@ class DeliveryDialog extends React.Component {
               keyboardFocused={true}
               onTouchTap={() => {
                 this.setState({
-                  loading: true
+                  loading: true,
                 });
                 this.props.handleDeliver(
                   this.state.simple.includeImages,
@@ -68,11 +62,11 @@ class DeliveryDialog extends React.Component {
                   this.state.simple.markAsRead,
                   () =>
                     this.setState({
-                      loading: false
+                      loading: false,
                     })
                 );
               }}
-            />
+            />,
           ]}
           modal={false}
           open={this.props.open}
@@ -80,7 +74,7 @@ class DeliveryDialog extends React.Component {
         >
           {this.state.loading && <LinearProgress mode="indeterminate" />}
           <List className="Home__feedList">
-            {this.props.feeds.map(feed =>
+            {this.props.feeds.map(feed => (
               <div>
                 <AboveMobile>
                   <ListItem
@@ -89,7 +83,7 @@ class DeliveryDialog extends React.Component {
                     primaryText={feed.title}
                     rightAvatar={
                       <Chip className="Home__feedListUnread" size={30}>
-                        {feed.unreadCount ? feed.unreadCount : "0"} new
+                        {feed.unreadCount ? feed.unreadCount : '0'} new
                       </Chip>
                     }
                   />
@@ -102,7 +96,7 @@ class DeliveryDialog extends React.Component {
                   />
                 </Mobile>
               </div>
-            )}
+            ))}
           </List>
           <ExpansionPanel title="Options" expandedTitle="Expanded Title">
             <div className="Home__feedOption">
@@ -112,7 +106,7 @@ class DeliveryDialog extends React.Component {
                     const simple = previousState.simple;
                     simple.includeImages = isInputChecked;
                     return {
-                      simple
+                      simple,
                     };
                   });
                 }}
@@ -128,7 +122,7 @@ class DeliveryDialog extends React.Component {
                     const simple = previousState.simple;
                     simple.extractArticle = isInputChecked;
                     return {
-                      simple
+                      simple,
                     };
                   });
                 }}
@@ -144,7 +138,7 @@ class DeliveryDialog extends React.Component {
                     const simple = previousState.simple;
                     simple.markAsRead = isInputChecked;
                     return {
-                      simple
+                      simple,
                     };
                   });
                 }}
@@ -166,7 +160,7 @@ DeliveryDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
   handleDeliver: PropTypes.func.isRequired,
-  feeds: PropTypes.array.isRequired
+  feeds: PropTypes.array.isRequired,
 };
 
 export default DeliveryDialog;

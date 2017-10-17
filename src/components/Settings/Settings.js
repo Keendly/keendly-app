@@ -1,13 +1,13 @@
-import React from "react";
-import PropTypes from "prop-types";
-import LinearProgress from "material-ui/LinearProgress";
-import TextField from "material-ui/TextField";
-import Checkbox from "material-ui/Checkbox";
-import RaisedButton from "material-ui/RaisedButton";
-import SaveIcon from "material-ui/svg-icons/content/save";
-import Snackbar from "material-ui/Snackbar";
+import React from 'react';
+import PropTypes from 'prop-types';
+import LinearProgress from 'material-ui/LinearProgress';
+import TextField from 'material-ui/TextField';
+import Checkbox from 'material-ui/Checkbox';
+import RaisedButton from 'material-ui/RaisedButton';
+import SaveIcon from 'material-ui/svg-icons/content/save';
+import Snackbar from 'material-ui/Snackbar';
 
-import "./Settings.css";
+import './Settings.css';
 
 class Settings extends React.Component {
   constructor(props) {
@@ -15,7 +15,7 @@ class Settings extends React.Component {
     this.state = {
       loading: false,
       snackbarOpen: false,
-      error: false
+      error: false,
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -27,17 +27,17 @@ class Settings extends React.Component {
   }
 
   componentDidMount() {
-    document.title = "Settings | Keendly";
+    document.title = 'Settings | Keendly';
   }
 
   loadSettingsFromServer(page) {
     this.setState({
-      loading: true
+      loading: true,
     });
-    fetch(this.props.url + "/users/self", {
+    fetch(this.props.url + '/users/self', {
       headers: {
-        Authorization: this.props.token
-      }
+        Authorization: this.props.token,
+      },
     })
       .then(response => response.json())
       .then(json => {
@@ -45,37 +45,37 @@ class Settings extends React.Component {
           data: json,
           loading: false,
           deliveryEmail: json.deliveryEmail,
-          notifyNoArticles: json.notifyNoArticles
+          notifyNoArticles: json.notifyNoArticles,
         });
       });
   }
 
   handleSubmit() {
-    fetch(this.props.url + "/users/self", {
+    fetch(this.props.url + '/users/self', {
       headers: {
         Authorization: this.props.token,
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json',
       },
-      method: "PATCH",
+      method: 'PATCH',
       body: JSON.stringify({
         deliveryEmail: this.state.deliveryEmail,
-        notifyNoArticles: this.state.notifyNoArticles
-      })
+        notifyNoArticles: this.state.notifyNoArticles,
+      }),
     }).then(response => {
       if (response.ok) {
         this.setState({
           snackbarOpen: true,
-          error: false
+          error: false,
         });
       } else if (response.status === 400) {
         response.json().then(json => {
           this.setState({
-            error: json.description
+            error: json.description,
           });
         });
       } else {
         this.setState({
-          error: "Error saving settings, try again later"
+          error: 'Error saving settings, try again later',
         });
       }
     });
@@ -83,46 +83,49 @@ class Settings extends React.Component {
 
   handleSnackbarClose = () => {
     this.setState({
-      snackbarOpen: false
+      snackbarOpen: false,
     });
   };
 
   render() {
     const styles = {
       email: {
-        marginBottom: 16
+        marginBottom: 16,
       },
       button: {
-        float: "right"
-      }
+        float: 'right',
+      },
     };
 
     return (
       <div className="Settings__wrapper">
         {this.state.loading && <LinearProgress mode="indeterminate" />}
-        {!this.state.loading &&
+        {!this.state.loading && (
           <div className="Settings__content">
-            {this.state.error &&
+            {this.state.error && (
               <div className="Settings__message Settings__error">
                 {this.state.error}
-              </div>}
-            {this.state.data.deliverySender &&
+              </div>
+            )}
+            {this.state.data.deliverySender && (
               <div className="Settings__message Settings__info">
-                Make sure to add <b>{this.state.data.deliverySender}</b> to your{" "}
-                <b>Approved Personal Document E-mail List</b>, you can do it{" "}
+                Make sure to add <b>{this.state.data.deliverySender}</b> to your{' '}
+                <b>Approved Personal Document E-mail List</b>, you can do it{' '}
                 <a
                   href="https://www.amazon.com/mn/dcw/myx.html/ref=kinw_myk_surl_2#/home/settings/"
                   target="_blank"
+                  rel="noopener noreferrer"
                 >
                   here
                 </a>.
-              </div>}
+              </div>
+            )}
             <TextField
               floatingLabelText="Send-To-Kindle E-Mail"
               value={this.state.deliveryEmail}
               onChange={(event, newValue) => {
                 this.setState({
-                  deliveryEmail: newValue
+                  deliveryEmail: newValue,
                 });
               }}
               fullWidth
@@ -133,7 +136,7 @@ class Settings extends React.Component {
               checked={this.state.notifyNoArticles}
               onCheck={(event, newValue) => {
                 this.setState({
-                  notifyNoArticles: newValue
+                  notifyNoArticles: newValue,
                 });
               }}
             />
@@ -151,7 +154,8 @@ class Settings extends React.Component {
               autoHideDuration={4000}
               onRequestClose={this.handleSnackbarClose}
             />
-          </div>}
+          </div>
+        )}
       </div>
     );
   }
@@ -159,7 +163,7 @@ class Settings extends React.Component {
 
 Settings.propTypes = {
   token: PropTypes.string.isRequired,
-  url: PropTypes.string.isRequired
+  url: PropTypes.string.isRequired,
 };
 
 export default Settings;

@@ -1,51 +1,49 @@
-import React from "react";
-import PropTypes from "prop-types";
-import Checkbox from "material-ui/Checkbox";
-import Chip from "material-ui/Chip";
-import Dialog from "material-ui/Dialog";
-import FlatButton from "material-ui/FlatButton";
-import { List, ListItem } from "material-ui/List";
-import SelectField from "material-ui/SelectField";
-import MenuItem from "material-ui/MenuItem";
-import LinearProgress from "material-ui/LinearProgress";
-import ExpansionPanel from "../ExpansionPanel";
+import React from 'react';
+import PropTypes from 'prop-types';
+import Checkbox from 'material-ui/Checkbox';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import {List, ListItem} from 'material-ui/List';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
+import LinearProgress from 'material-ui/LinearProgress';
+import ExpansionPanel from '../ExpansionPanel';
 // import moment from "moment";
-import moment from "moment-timezone";
+import moment from 'moment-timezone';
 
 class DeliveryDialog extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      time: moment().format("HH:00"),
+      time: moment().format('HH:00'),
       timezone: moment.tz.guess(),
       simpleMode: true,
       simple: {
         includeImages: true,
         extractArticle: true,
-        markAsRead: true
-      }
+        markAsRead: true,
+      },
     };
   }
 
-  handleTimeChange = (event, index, time) => this.setState({ time });
+  handleTimeChange = (event, index, time) => this.setState({time});
 
-  handleTimezoneChange = (event, index, timezone) =>
-    this.setState({ timezone });
+  handleTimezoneChange = (event, index, timezone) => this.setState({timezone});
 
   render() {
     if (this.state.simpleMode) {
       const title =
         this.props.feeds.length === 1
-          ? "Schedule daily deliveries"
-          : "Schedule daily deliveries of " +
+          ? 'Schedule daily deliveries'
+          : 'Schedule daily deliveries of ' +
             this.props.feeds.length +
-            " feeds";
+            ' feeds';
 
       const timeItems = [].concat(
-        [...Array(24)].map((x, i) => (i < 10 ? "0" + i : i)).map(hour => {
+        [...Array(24)].map((x, i) => (i < 10 ? '0' + i : i)).map(hour => {
           return [
-            <MenuItem value={hour + ":00"} primaryText={hour + ":00"} />,
-            <MenuItem value={hour + ":30"} primaryText={hour + ":30"} />
+            <MenuItem value={hour + ':00'} primaryText={hour + ':00'} />,
+            <MenuItem value={hour + ':30'} primaryText={hour + ':30'} />,
           ];
         })
       );
@@ -70,7 +68,7 @@ class DeliveryDialog extends React.Component {
               keyboardFocused={true}
               onTouchTap={() => {
                 this.setState({
-                  loading: true
+                  loading: true,
                 });
                 this.props.handleSubscribe(
                   this.state.time,
@@ -80,11 +78,11 @@ class DeliveryDialog extends React.Component {
                   this.state.simple.markAsRead,
                   () =>
                     this.setState({
-                      loading: false
+                      loading: false,
                     })
                 );
               }}
-            />
+            />,
           ]}
           modal={false}
           open={this.props.open}
@@ -108,13 +106,13 @@ class DeliveryDialog extends React.Component {
             {timezones}
           </SelectField>
           <List className="Home__feedList">
-            {this.props.feeds.map(feed =>
+            {this.props.feeds.map(feed => (
               <ListItem
                 className="Home__feedListItem"
                 disabled
                 primaryText={feed.title}
               />
-            )}
+            ))}
           </List>
           <ExpansionPanel title="Options" expandedTitle="Expanded Title">
             <div className="Home__feedOption">
@@ -124,7 +122,7 @@ class DeliveryDialog extends React.Component {
                     const simple = previousState.simple;
                     simple.includeImages = isInputChecked;
                     return {
-                      simple
+                      simple,
                     };
                   });
                 }}
@@ -140,7 +138,7 @@ class DeliveryDialog extends React.Component {
                     const simple = previousState.simple;
                     simple.extractArticle = isInputChecked;
                     return {
-                      simple
+                      simple,
                     };
                   });
                 }}
@@ -156,7 +154,7 @@ class DeliveryDialog extends React.Component {
                     const simple = previousState.simple;
                     simple.markAsRead = isInputChecked;
                     return {
-                      simple
+                      simple,
                     };
                   });
                 }}
@@ -178,7 +176,7 @@ DeliveryDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
   handleSubscribe: PropTypes.func.isRequired,
-  feeds: PropTypes.array.isRequired
+  feeds: PropTypes.array.isRequired,
 };
 
 export default DeliveryDialog;
