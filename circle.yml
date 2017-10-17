@@ -2,6 +2,10 @@ machine:
   node:
     version: v6.1.0
 
+test:
+  override:
+    - echo 'All good :-)'
+
 deployment:
   master:
     branch: master
