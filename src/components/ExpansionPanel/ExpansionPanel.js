@@ -1,6 +1,7 @@
 import React from 'react';
 
 import IconButton from 'material-ui/IconButton';
+import './ExpansionPanel.css';
 
 export default class ExpansionPanel extends React.Component {
   constructor(props) {

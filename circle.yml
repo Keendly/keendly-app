@@ -12,3 +12,5 @@ deployment:
     commands:
       - npm run build
       - aws s3 sync build s3://app.keendly.com/ --delete
+      # remove installed modules to avoid caching
+      - rm -rf node_modules 
