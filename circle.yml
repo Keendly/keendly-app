@@ -2,6 +2,10 @@ machine:
   node:
     version: v6.1.0
 
+dependencies:
+  pre:
+    - rm -rf node_modules/*
+
 test:
   override:
     - echo 'All good :-)'
