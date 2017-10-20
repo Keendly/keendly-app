@@ -459,7 +459,7 @@ class Home extends React.Component {
 }
 
 Home.propTypes = {
-  token: PropTypes.string.isRequired,
+  token: PropTypes.string,
   url: PropTypes.string.isRequired,
 };
 

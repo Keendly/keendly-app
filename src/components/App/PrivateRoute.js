@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import IconMenu from 'material-ui/IconMenu';
 import IconButton from 'material-ui/IconButton';
 import PersonIcon from 'material-ui/svg-icons/social/person';
@@ -32,10 +32,11 @@ const AUTH_KEY = 'k33ndly_535510n';
 const cookies = new Cookies();
 
 const isLoggedIn = () => {
+  console.log(cookies.get(AUTH_KEY) === true);
   return cookies.get(AUTH_KEY);
 };
 
-class PrivateRoute extends React.Component {
+class PrivateRoute extends Component {
   constructor(props) {
     super(props);
     this.state = {

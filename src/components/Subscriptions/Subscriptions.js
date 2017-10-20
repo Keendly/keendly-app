@@ -285,7 +285,7 @@ class Subscriptions extends React.Component {
 }
 
 Subscriptions.propTypes = {
-  token: PropTypes.string.isRequired,
+  token: PropTypes.string,
   url: PropTypes.string.isRequired,
 };
 

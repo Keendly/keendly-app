@@ -172,7 +172,7 @@ class Deliveries extends React.Component {
 }
 
 Deliveries.propTypes = {
-  token: PropTypes.string.isRequired,
+  token: PropTypes.string,
   url: PropTypes.string.isRequired,
 };
 

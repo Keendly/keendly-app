@@ -162,7 +162,7 @@ class Settings extends React.Component {
 }
 
 Settings.propTypes = {
-  token: PropTypes.string.isRequired,
+  token: PropTypes.string,
   url: PropTypes.string.isRequired,
 };
 
