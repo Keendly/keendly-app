@@ -25,7 +25,7 @@ import gmail from './gmail.png';
 
 import {Mobile, Desktop, AboveMobile, BelowDesktop} from '../../breakpoints';
 
-import {BrowserRouter as Route, Link, Redirect} from 'react-router-dom';
+import {Route, Link, Redirect} from 'react-router-dom';
 
 const AUTH_KEY = 'k33ndly_535510n';
 
@@ -240,7 +240,6 @@ class PrivateRoute extends Component {
                       icon={<HomeIcon />}
                       containerElement={<Link to="/" />}
                     />
-                    - const feedbackActions =
                     <FlatButton
                       label="Scheduled"
                       icon={<TimerIcon />}
