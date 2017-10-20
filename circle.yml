@@ -4,7 +4,8 @@ machine:
 
 dependencies:
   pre:
-    - rm -rf node_modules/*
+    # ignore cached modules
+    - rm -rf node_modules
 
 test:
   override:
