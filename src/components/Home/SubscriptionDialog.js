@@ -50,7 +50,9 @@ class DeliveryDialog extends React.Component {
 
       const timezones = moment.tz
         .names()
-        .map(timezone => <MenuItem value={timezone} primaryText={timezone} />);
+        .map(timezone => (
+          <MenuItem value={timezone} primaryText={timezone} key={timezone} />
+        ));
 
       return (
         <Dialog

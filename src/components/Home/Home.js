@@ -75,6 +75,8 @@ class Home extends React.Component {
       subscriptionOpen: false,
       loading: false,
       deliverySnackbarOpen: false,
+      subscriptionSnackbarOpen: false,
+      nothingSelectedDialogOpen: false,
     };
     this.onSearchTextChanged = this.onSearchTextChanged.bind(this);
     this.handleDeliveryOpen = this.handleDeliveryOpen.bind(this);
@@ -283,7 +285,7 @@ class Home extends React.Component {
     });
   }
 
-  renderChip(data) {
+  renderChip(data, key) {
     const color = this.categoryColor(data);
     const style = {'background-color': color};
     const classNames = [
@@ -291,7 +293,7 @@ class Home extends React.Component {
       'Home__category_chip_' + CATEGORY_COLORS[color],
     ];
     return (
-      <Chip className={classNames.join(' ')} style={style}>
+      <Chip className={classNames.join(' ')} style={style} key={key}>
         {data}
       </Chip>
     );
@@ -412,7 +414,11 @@ class Home extends React.Component {
                               </Badge>
                             </div>
                             {feed.categories &&
-                              feed.categories.map(this.renderChip, this)}
+                              feed.categories.map(
+                                this.renderChip,
+                                this,
+                                feed.feedId
+                              )}
                           </TableCell>
                           <AboveMobile>
                             <TableCell>

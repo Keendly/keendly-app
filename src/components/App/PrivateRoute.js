@@ -32,7 +32,6 @@ const AUTH_KEY = 'k33ndly_535510n';
 const cookies = new Cookies();
 
 const isLoggedIn = () => {
-  console.log(cookies.get(AUTH_KEY) === true);
   return cookies.get(AUTH_KEY);
 };
 
@@ -131,7 +130,7 @@ class PrivateRoute extends Component {
   footerButtons() {
     return (
       <div>
-        <div class="share-buttons">
+        <div className="share-buttons">
           <a
             href="https://www.facebook.com/KeendlyApp/"
             target="_blank"
