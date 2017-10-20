@@ -107,14 +107,14 @@ class PrivateRoute extends Component {
           LEAVE FEEDBACK
         </a>
         <a href="http://keendly.com" target="_blank" rel="noopener noreferrer">
-          > WEBSITE
+          WEBSITE
         </a>
         <a
           href="http://blog.keendly.com"
           target="_blank"
           rel="noopener noreferrer"
         >
-          > BLOG
+          BLOG
         </a>
         <a
           href="https://keendly.myjetbrains.com/youtrack/agiles"
