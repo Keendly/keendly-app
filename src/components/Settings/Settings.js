@@ -47,6 +47,9 @@ class Settings extends React.Component {
           deliveryEmail: json.deliveryEmail,
           notifyNoArticles: json.notifyNoArticles,
         });
+      })
+      .catch(error => {
+        window.location.replace('login');
       });
   }
 

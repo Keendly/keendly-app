@@ -62,6 +62,9 @@ class Deliveries extends React.Component {
           data: json,
           loading: false,
         });
+      })
+      .catch(error => {
+        window.location.replace('login');
       });
   }
 

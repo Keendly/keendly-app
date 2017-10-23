@@ -112,6 +112,9 @@ class Home extends React.Component {
           data: json.filter(n => n.title),
           loading: false,
         });
+      })
+      .catch(error => {
+        window.location.replace('login');
       });
   }
 
