@@ -70,7 +70,7 @@ class Deliveries extends React.Component {
       return 'delivered';
     }
     if (delivery.error) {
-      if (delivery.error === 'NO_ARTICLES') {
+      if (delivery.error === 'NO ARTICLES') {
         return 'no articles';
       } else {
         return 'failed';
