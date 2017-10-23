@@ -182,7 +182,7 @@ class Subscriptions extends React.Component {
                       </TableCell>
                       <TableCell>Feeds</TableCell>
                       <AboveMobile>
-                        <TableCell>Status</TableCell>
+                        <TableCell style={{width: '100px'}}>Status</TableCell>
                       </AboveMobile>
                       <TableCell>Delivery time</TableCell>
                     </TableRow>
