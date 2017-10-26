@@ -370,7 +370,7 @@ class Home extends React.Component {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell checkbox>
+                    <TableCell checkbox className="Home__table_checkbox">
                       <Checkbox
                         onCheck={this.onSelectAllClick}
                         checked={
@@ -396,7 +396,7 @@ class Home extends React.Component {
                           .toLowerCase()
                           .includes(this.state.search_text.toLowerCase())) && (
                         <TableRow key={index} className="Home__feed_row">
-                          <TableCell checkbox>
+                          <TableCell checkbox className="Home__table_checkbox">
                             <Checkbox
                               onCheck={(event, isInputChecked) =>
                                 this.onSelectClick(feed, isInputChecked)}

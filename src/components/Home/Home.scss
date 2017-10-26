@@ -1,13 +1,14 @@
-@import "../../vars";
+@import '../../vars';
 
 .Home {
   &__feed_title {
     float: left;
-    margin-top: .2rem !important;
+    margin-top: 0.2rem !important;
     white-space: normal !important;
   }
 
   &__feed_badge {
+    padding: 24px 24px 5px 0px !important;
     span {
       background-color: $primary !important;
       color: white !important;
@@ -15,8 +16,8 @@
   }
 
   &__category_chip {
-    margin-top: .7rem !important;
-    margin-bottom: .7rem !important;
+    margin-top: 0.7rem !important;
+    margin-bottom: 0.7rem !important;
     margin-left: 0.3rem !important;
     float: right !important;
 
@@ -55,8 +56,8 @@
     button {
       background-color: $primary !important;
     }
-    margin-right: .3rem;
-    margin-bottom: .3rem;
+    margin-right: 0.3rem;
+    margin-bottom: 0.3rem;
     :hover {
       background-color: $secondary !important;
     }
@@ -92,7 +93,7 @@
   }
   &__feedOption {
     font-size: 15px;
-    opacity: .87;
+    opacity: 0.87;
   }
 
   &__timeSelect {
@@ -121,5 +122,9 @@
   &__error {
     color: #b71c1c;
     background-color: #ffcdd2;
+  }
+
+  &__table_checkbox {
+    padding: 4px 5px 4px 24px !important;
   }
 }

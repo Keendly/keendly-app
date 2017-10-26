@@ -58,6 +58,7 @@ class DeliveryDialog extends React.Component {
         <Dialog
           title={title}
           autoScrollBodyContent={true}
+          contentStyle={{width: '95%'}}
           actions={[
             <FlatButton
               label="Cancel"
