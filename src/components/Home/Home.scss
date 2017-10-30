@@ -53,14 +53,17 @@
 
   &__button {
     float: left;
-    button {
-      background-color: $primary !important;
+    &__enabled {
+      button {
+        background-color: $primary !important;
+      }
+      :hover {
+        background-color: $secondary !important;
+      }
     }
+
     margin-right: 0.3rem;
     margin-bottom: 0.3rem;
-    :hover {
-      background-color: $secondary !important;
-    }
   }
 
   &__buttons {
@@ -122,6 +125,11 @@
   &__error {
     color: #b71c1c;
     background-color: #ffcdd2;
+  }
+
+  &__info {
+    background-color: #bbdefb;
+    color: #0d47a1;
   }
 
   &__table_checkbox {

@@ -77,6 +77,7 @@ class Home extends React.Component {
       deliverySnackbarOpen: false,
       subscriptionSnackbarOpen: false,
       nothingSelectedDialogOpen: false,
+      deliveryEmailSet: false,
     };
     this.onSearchTextChanged = this.onSearchTextChanged.bind(this);
     this.handleDeliveryOpen = this.handleDeliveryOpen.bind(this);
@@ -91,15 +92,47 @@ class Home extends React.Component {
 
   componentWillMount() {
     this.loadFeedsFromServer();
+    this.loadUserProfile();
   }
 
   componentDidMount() {
     document.title = 'Home | Keendly';
   }
 
-  loadFeedsFromServer() {
+  loadUserProfile() {
     this.setState({
       loading: true,
+    });
+    fetch(this.props.url + '/users/self', {
+      headers: {
+        Authorization: this.props.token,
+      },
+    })
+      .then(response => response.json())
+      .then(json => {
+        const deliveryEmail = json.deliveryEmail;
+        if (deliveryEmail) {
+          this.setState({
+            deliveryEmailSet: true,
+          });
+        }
+        this.setState((state, props) => {
+          return {
+            deliveryEmailSet: !!json.deliveryEmail,
+            loadingUser: false,
+            loading: state.loadingFeeds,
+          };
+        });
+      })
+      .catch(error => {
+        console.log(error);
+        window.location.replace('login');
+      });
+  }
+
+  loadFeedsFromServer() {
+    this.setState({
+      loadingFeeds: true,
     });
     fetch(this.props.url + '/feeds', {
       headers: {
@@ -108,9 +141,12 @@ class Home extends React.Component {
     })
       .then(response => response.json())
       .then(json => {
-        this.setState({
-          data: json.filter(n => n.title),
-          loading: false,
+        this.setState((state, props) => {
+          return {
+            data: json.filter(n => n.title),
+            loadingFeeds: false,
+            loading: state.loadingUser,
+          };
         });
       })
       .catch(error => {
@@ -304,7 +340,9 @@ class Home extends React.Component {
 
   render() {
     const feedIds = this.state.selectedFeeds.map(feed => feed.feedId);
-
+    const buttonClasses = this.state.deliveryEmailSet
+      ? 'Home__button Home__button__enabled'
+      : 'Home__button';
     return (
       <div className="Home__wrapper">
         {this.state.loading && <LinearProgress mode="indeterminate" />}
@@ -315,12 +353,19 @@ class Home extends React.Component {
                 {this.state.error}
               </div>
             )}
+            {!this.state.deliveryEmailSet && (
+              <div className="Home__message Home__info">
+                Send-To-Kindle email is not configured, please go to{' '}
+                <a href="/settings">settings</a> to set it.
+              </div>
+            )}
             <div className="Home__buttons">
               <RaisedButton
-                className="Home__button"
+                className={buttonClasses}
                 onTouchTap={this.handleDeliveryOpen}
                 label="Deliver now"
                 secondary={true}
+                disabled={!this.state.deliveryEmailSet}
               />
               <DeliveryDialog
                 open={this.state.deliveryOpen}
@@ -330,9 +375,10 @@ class Home extends React.Component {
               />
               <RaisedButton
                 secondary={true}
-                className="Home__button"
+                className={buttonClasses}
                 onTouchTap={this.handleSubscriptionOpen}
                 label="Schedule deliveries"
+                disabled={!this.state.deliveryEmailSet}
               />
               <SubscriptionDialog
                 open={this.state.subscriptionOpen}
