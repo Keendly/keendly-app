@@ -23,14 +23,14 @@ class Settings extends React.Component {
   }
 
   componentWillMount() {
-    this.loadSettingsFromServer(1);
+    this.loadSettingsFromServer();
   }
 
   componentDidMount() {
     document.title = 'Settings | Keendly';
   }
 
-  loadSettingsFromServer(page) {
+  loadSettingsFromServer() {
     this.setState({
       loading: true,
     });
@@ -70,6 +70,7 @@ class Settings extends React.Component {
           snackbarOpen: true,
           error: false,
         });
+        this.loadSettingsFromServer();
       } else if (response.status === 400) {
         response.json().then(json => {
           this.setState({
