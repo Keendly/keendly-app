@@ -14,7 +14,7 @@ import LinearProgress from 'material-ui/LinearProgress';
 import Chip from 'material-ui/Chip';
 import Dialog from 'material-ui/Dialog';
 import Snackbar from 'material-ui/Snackbar';
-
+import {Link} from 'react-router-dom';
 import {AboveMobile} from '../../breakpoints';
 
 import './Subscriptions.css';
@@ -157,7 +157,7 @@ class Subscriptions extends React.Component {
             this.state.page === 1 && (
               <div className="Subscriptions__message">
                 It seems that you do not have any deliveries scheduled. Go to{' '}
-                <a href="/">Home</a> to add one.
+                <Link to="/">home</Link> to add one.
               </div>
             )}
           {!this.state.loading &&
