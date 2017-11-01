@@ -20,7 +20,7 @@ import Snackbar from 'material-ui/Snackbar';
 import Dialog from 'material-ui/Dialog';
 
 import {Mobile, Desktop, AboveMobile} from '../../breakpoints';
-
+import {Link} from 'react-router-dom';
 import './Home.css';
 
 // https://material.io/guidelines/style/color.html#color-color-palette
@@ -356,7 +356,7 @@ class Home extends React.Component {
             {!this.state.deliveryEmailSet && (
               <div className="Home__message Home__info">
                 Send-To-Kindle email is not configured, please go to{' '}
-                <a href="/settings">settings</a> to set it.
+                <Link to="/settings">settings</Link> to set it.
               </div>
             )}
             <div className="Home__buttons">
