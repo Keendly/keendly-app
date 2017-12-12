@@ -125,8 +125,9 @@ class Settings extends React.Component {
               </div>
             )}
             <TextField
-              floatingLabelText="Send-To-Kindle E-Mail"
               hintText="your Send-To-Kindle email goes here"
+              floatingLabelText="Send-To-Kindle E-Mail"
+              floatingLabelFixed={true}
               value={this.state.deliveryEmail}
               onChange={(event, newValue) => {
                 this.setState({
