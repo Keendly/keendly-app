@@ -233,7 +233,7 @@ class PrivateRoute extends Component {
               <Desktop>
                 <Toolbar className="Header__toolbar">
                   <ToolbarGroup firstChild>
-                    <a href="http://keendly.com" target="_blank">
+                    <a href="http://keendly.com" target="_blank" rel="noopener noreferrer">
                       <img className="Header__logo" src={logo} alt="logo" />
                     </a>
                     <FlatButton
