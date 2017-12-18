@@ -4,6 +4,7 @@ import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 import CircularProgress from 'material-ui/CircularProgress';
+import LinearProgress from 'material-ui/LinearProgress';
 import Cookies from 'universal-cookie';
 
 import {Redirect} from 'react-router-dom';
@@ -244,6 +245,7 @@ class Login extends Component {
                   />,
                 ]}
               >
+                {this.state.loading && <LinearProgress mode="indeterminate" />}
                 <TextField
                   hintText="Email"
                   fullWidth={true}
