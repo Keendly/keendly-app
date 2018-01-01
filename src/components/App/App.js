@@ -12,13 +12,12 @@ import PrivateRoute from './PrivateRoute';
 
 import './App.css';
 
-const URL =
-  process.env.NODE_ENV === 'development'
-    ? 'https://fmip59w73h.execute-api.eu-west-1.amazonaws.com/dev'
-    : 'https://m1ndoce0cl.execute-api.eu-west-1.amazonaws.com/v1';
+const URL = process.env.NODE_ENV === 'development'
+  ? 'https://fmip59w73h.execute-api.eu-west-1.amazonaws.com/dev'
+  : 'https://m1ndoce0cl.execute-api.eu-west-1.amazonaws.com/v1';
 
 class App extends Component {
-  render() {
+  render () {
     return (
       <MuiThemeProvider>
         <Router>
@@ -32,15 +31,13 @@ class App extends Component {
             />
             <Route
               path="/inoreaderCallback"
-              render={props => {
-                return (
-                  <LoginCallback
-                    url={URL}
-                    provider="INOREADER"
-                    query={props.location.search}
-                  />
-                );
-              }}
+              render={props => (
+                <LoginCallback
+                  url={URL}
+                  provider="INOREADER"
+                  query={props.location.search}
+                />
+              )}
             />
             <Route
               path="/newsblurCallback"
@@ -52,17 +49,25 @@ class App extends Component {
                 />
               )}
             />
-            <PrivateRoute exact path="/" render={() => <Home url={URL} />} />
+            <PrivateRoute
+              exact
+              path="/"
+              url={URL}
+              render={() => <Home url={URL} />}
+            />
             <PrivateRoute
               path="/subscriptions"
+              url={URL}
               render={() => <Subscriptions url={URL} />}
             />
             <PrivateRoute
               path="/deliveries"
+              url={URL}
               render={() => <Deliveries url={URL} />}
             />
             <PrivateRoute
               path="/settings"
+              url={URL}
               render={() => <Settings url={URL} />}
             />
           </div>

@@ -132,3 +132,11 @@ body {
   height: auto;
   position: relative;
 }
+
+.Payment {
+  &__container {
+    .braintree-dropin-react-submit-btn-wrapper {
+      text-align: right;
+    }
+  }
+}

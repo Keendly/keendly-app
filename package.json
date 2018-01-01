@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "braintree-dropin-react": "^0.0.2",
     "material-ui": "^v0.18.7",
     "material-ui-next": "file:packages/material-ui-next",
     "moment": "^2.18.1",
@@ -16,11 +17,11 @@
     "universal-cookie": "^2.1.0"
   },
   "devDependencies": {
-    "eslint-config-prettier": "^2.2.0",
-    "eslint-plugin-prettier": "^2.1.2",
+    "eslint-config-prettier": "2.2.0",
+    "eslint-plugin-prettier": "2.1.2",
     "node-sass-chokidar": "0.0.3",
     "npm-run-all": "^4.0.2",
-    "prettier": "^1.5.0",
+    "prettier": "1.5.0",
     "react-scripts": "1.0.7"
   },
   "scripts": {
