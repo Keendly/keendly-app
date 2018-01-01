@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import CircularProgress from 'material-ui/CircularProgress';
-import Cookies from 'universal-cookie';
 
 import {Redirect} from 'react-router-dom';
 
@@ -12,67 +11,64 @@ import './Login.css';
 
 import {Mobile, AboveMobile} from '../../breakpoints';
 
-const cookies = new Cookies();
-
 class LoginCallback extends Component {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super (props);
     this.state = {
       loading: false,
     };
   }
 
-  componentWillMount() {
-    const params = new URLSearchParams(this.props.query);
-    this.setState({
+  componentWillMount () {
+    const params = new URLSearchParams (this.props.query);
+    this.setState ({
       loading: true,
     });
-    fetch(this.props.url + '/login', {
+    fetch (this.props.url + '/login', {
       method: 'post',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
+      body: JSON.stringify ({
         provider: this.props.provider,
         grant_type: 'authentication_code',
-        code: params.get('code'),
-        state: params.get('state'),
+        code: params.get ('code'),
+        state: params.get ('state'),
       }),
     })
-      .then(response => {
+      .then (response => {
         if (response.ok) {
-          this.setState({
+          this.setState ({
             loading: false,
             error: false,
           });
-          response.text().then(token => {
-            cookies.set('k33ndly_535510n', token);
-            console.log(token);
-            this.setState({
+          response.text ().then (token => {
+            localStorage.setItem ('k33ndly_535510n', token);
+            this.setState ({
               loggedIn: true,
             });
           });
         } else {
-          console.log(response.status);
-          this.setState({
+          console.log (response.status);
+          this.setState ({
             error: 'Login error, please try again',
             loading: false,
           });
         }
       })
-      .catch(error => {
-        console.log(error);
-        this.setState({
+      .catch (error => {
+        console.log (error);
+        this.setState ({
           error: 'Login error, please try again',
           loading: false,
         });
       });
   }
 
-  render() {
+  render () {
     if (this.state.loggedIn) {
-      console.log('udalo sie zalogowac');
+      console.log ('udalo sie zalogowac');
       return <Redirect to="/" />;
     } else if (this.state.loading) {
       return (
