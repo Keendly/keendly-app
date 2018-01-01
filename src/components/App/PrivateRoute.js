@@ -146,7 +146,7 @@ class PrivateRoute extends Component {
             <img src={gmail} alt="email" />
           </a>
         </div>
-        <div className="Footer__copyright">© 2017 Keendly</div>
+        <div className="Footer__copyright">© 2018 Keendly</div>
       </div>
     );
   }
