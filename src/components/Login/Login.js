@@ -129,7 +129,6 @@ class Login extends Component {
             error: false,
           });
           response.text ().then (token => {
-            cookies.set ('k33ndly_535510n', token);
             localStorage.setItem ('k33ndly_535510n', token);
             this.setState ({
               loggedIn: true,
