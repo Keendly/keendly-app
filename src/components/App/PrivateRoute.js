@@ -147,32 +147,6 @@ class PrivateRoute extends Component {
     );
   }
 
-  subscribePush () {
-    navigator.serviceWorker.ready.then (registration => {
-      if (!registration.pushManager) {
-        alert ("Your browser doesn't support push notification.");
-        return false;
-      }
-
-      //To subscribe `push notification` from push manager
-      registration.pushManager
-        .subscribe ({
-          userVisibleOnly: true, //Always show notification when received
-        })
-        .then (subscription => {
-          // toast ('Subscribed successfully.');
-          console.info ('Push notification subscribed.');
-          console.log (subscription);
-          //saveSubscriptionID(subscription);
-          // changePushStatus (true);
-        })
-        .catch (error => {
-          // changePushStatus (false);
-          console.error ('Push notification subscription error: ', error);
-        });
-    });
-  }
-
   render () {
     const {render: Component, ...rest} = this.props;
 
