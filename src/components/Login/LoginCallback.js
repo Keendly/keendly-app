@@ -44,13 +44,12 @@ class LoginCallback extends Component {
             error: false,
           });
           response.text ().then (token => {
-            localStorage.setItem ('k33ndly_535510n', token);
+            this.props.logIn (token);
             this.setState ({
               loggedIn: true,
             });
           });
         } else {
-          console.log (response.status);
           this.setState ({
             error: 'Login error, please try again',
             loading: false,
@@ -58,7 +57,6 @@ class LoginCallback extends Component {
         }
       })
       .catch (error => {
-        console.log (error);
         this.setState ({
           error: 'Login error, please try again',
           loading: false,
@@ -68,7 +66,6 @@ class LoginCallback extends Component {
 
   render () {
     if (this.state.loggedIn) {
-      console.log ('udalo sie zalogowac');
       return <Redirect to="/" />;
     } else if (this.state.loading) {
       return (
@@ -108,6 +105,7 @@ LoginCallback.propTypes = {
   url: PropTypes.string.isRequired,
   provider: PropTypes.string.isRequired,
   query: PropTypes.string,
+  logIn: PropTypes.func.isRequired,
 };
 
 export default LoginCallback;

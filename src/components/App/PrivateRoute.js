@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
+
 import IconMenu from 'material-ui/IconMenu';
 import IconButton from 'material-ui/IconButton';
 import PersonIcon from 'material-ui/svg-icons/social/person';
@@ -25,12 +27,6 @@ import gmail from './gmail.png';
 import {Mobile, Desktop, AboveMobile, BelowDesktop} from '../../breakpoints';
 
 import {Route, Link, Redirect} from 'react-router-dom';
-
-const AUTH_KEY = 'k33ndly_535510n';
-
-const isLoggedIn = () => {
-  return localStorage.getItem (AUTH_KEY);
-};
 
 class PrivateRoute extends Component {
   constructor (props) {
@@ -151,17 +147,40 @@ class PrivateRoute extends Component {
     );
   }
 
+  subscribePush () {
+    navigator.serviceWorker.ready.then (registration => {
+      if (!registration.pushManager) {
+        alert ("Your browser doesn't support push notification.");
+        return false;
+      }
+
+      //To subscribe `push notification` from push manager
+      registration.pushManager
+        .subscribe ({
+          userVisibleOnly: true, //Always show notification when received
+        })
+        .then (subscription => {
+          // toast ('Subscribed successfully.');
+          console.info ('Push notification subscribed.');
+          console.log (subscription);
+          //saveSubscriptionID(subscription);
+          // changePushStatus (true);
+        })
+        .catch (error => {
+          // changePushStatus (false);
+          console.error ('Push notification subscription error: ', error);
+        });
+    });
+  }
+
   render () {
     const {render: Component, ...rest} = this.props;
-    const component = React.cloneElement (Component (), {
-      token: localStorage.getItem (AUTH_KEY),
-    });
 
     return (
       <Route
         {...rest}
         render={props => {
-          return isLoggedIn ()
+          return this.props.getToken ()
             ? <div>
                 <BelowDesktop>
                   <Toolbar className="Header__toolbar">
@@ -219,7 +238,7 @@ class PrivateRoute extends Component {
                     <MenuItem
                       leftIcon={<PowerIcon />}
                       onClick={() => {
-                        localStorage.removeItem (AUTH_KEY);
+                        this.props.logOut ();
                         props.history.push ('/login');
                       }}
                     >
@@ -278,7 +297,7 @@ class PrivateRoute extends Component {
                           primaryText="Log out"
                           leftIcon={<PowerIcon />}
                           onClick={() => {
-                            localStorage.removeItem (AUTH_KEY);
+                            this.props.logOut ();
                             props.history.push ('/login');
                           }}
                         />
@@ -286,7 +305,7 @@ class PrivateRoute extends Component {
                     </ToolbarGroup>
                   </Toolbar>
                 </Desktop>
-                <div className="Content">{component}</div>
+                <div className="Content">{Component ()}</div>
                 <div className="Footer__wrapper">
                   <div className="Footer__content">
                     <AboveMobile>
@@ -385,5 +404,10 @@ class PrivateRoute extends Component {
     );
   }
 }
+
+PrivateRoute.propTypes = {
+  getToken: PropTypes.func.isRequired,
+  logOut: PropTypes.func.isRequired,
+};
 
 export default PrivateRoute;

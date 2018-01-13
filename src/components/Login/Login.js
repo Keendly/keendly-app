@@ -129,7 +129,7 @@ class Login extends Component {
             error: false,
           });
           response.text ().then (token => {
-            localStorage.setItem ('k33ndly_535510n', token);
+            this.props.logIn (token);
             this.setState ({
               loggedIn: true,
             });
@@ -310,6 +310,7 @@ class Login extends Component {
 Login.propTypes = {
   url: PropTypes.string.isRequired,
   error: PropTypes.string,
+  logIn: PropTypes.func.isRequired,
 };
 
 export default Login;

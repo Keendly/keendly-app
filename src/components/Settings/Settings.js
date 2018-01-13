@@ -10,75 +10,76 @@ import Snackbar from 'material-ui/Snackbar';
 import './Settings.css';
 
 class Settings extends React.Component {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super (props);
     this.state = {
       loading: false,
       snackbarOpen: false,
       error: false,
     };
 
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
+    this.handleSubmit = this.handleSubmit.bind (this);
+    this.handleSnackbarClose = this.handleSnackbarClose.bind (this);
   }
 
-  componentWillMount() {
-    this.loadSettingsFromServer();
+  componentWillMount () {
+    this.loadSettingsFromServer ();
   }
 
-  componentDidMount() {
+  componentDidMount () {
     document.title = 'Settings | Keendly';
   }
 
-  loadSettingsFromServer() {
-    this.setState({
+  loadSettingsFromServer () {
+    this.setState ({
       loading: true,
     });
-    fetch(this.props.url + '/users/self', {
+    fetch (this.props.url + '/users/self', {
       headers: {
         Authorization: this.props.token,
       },
     })
-      .then(response => response.json())
-      .then(json => {
-        this.setState({
+      .then (response => response.json ())
+      .then (json => {
+        this.setState ({
           data: json,
           loading: false,
           deliveryEmail: json.deliveryEmail,
           notifyNoArticles: json.notifyNoArticles,
         });
+        this.props.setUserProfile (json);
       })
-      .catch(error => {
-        window.location.replace('login');
+      .catch (error => {
+        window.location.replace ('login');
       });
   }
 
-  handleSubmit() {
-    fetch(this.props.url + '/users/self', {
+  handleSubmit () {
+    fetch (this.props.url + '/users/self', {
       headers: {
         Authorization: this.props.token,
         'Content-Type': 'application/json',
       },
       method: 'PATCH',
-      body: JSON.stringify({
+      body: JSON.stringify ({
         deliveryEmail: this.state.deliveryEmail,
         notifyNoArticles: this.state.notifyNoArticles,
       }),
-    }).then(response => {
+    }).then (response => {
       if (response.ok) {
-        this.setState({
+        this.setState ({
           snackbarOpen: true,
           error: false,
         });
-        this.loadSettingsFromServer();
+        this.loadSettingsFromServer ();
       } else if (response.status === 400) {
-        response.json().then(json => {
-          this.setState({
+        response.json ().then (json => {
+          this.setState ({
             error: json.description,
           });
         });
       } else {
-        this.setState({
+        this.setState ({
           error: 'Error saving settings, try again later',
         });
       }
@@ -86,12 +87,12 @@ class Settings extends React.Component {
   }
 
   handleSnackbarClose = () => {
-    this.setState({
+    this.setState ({
       snackbarOpen: false,
     });
   };
 
-  render() {
+  render () {
     const styles = {
       email: {
         marginBottom: 16,
@@ -104,17 +105,23 @@ class Settings extends React.Component {
     return (
       <div className="Settings__wrapper">
         {this.state.loading && <LinearProgress mode="indeterminate" />}
-        {!this.state.loading && (
+        {!this.state.loading &&
           <div className="Settings__content">
-            {this.state.error && (
+            {this.state.error &&
               <div className="Settings__message Settings__error">
                 {this.state.error}
-              </div>
-            )}
-            {this.state.data.deliverySender && (
+              </div>}
+            {this.state.data.deliverySender &&
               <div className="Settings__message Settings__info">
-                Make sure to add <b>{this.state.data.deliverySender}</b> to your{' '}
-                <b>Approved Personal Document E-mail List</b>, you can do it{' '}
+                Make sure to add
+                {' '}
+                <b>{this.state.data.deliverySender}</b>
+                {' '}
+                to your
+                {' '}
+                <b>Approved Personal Document E-mail List</b>
+                , you can do it
+                {' '}
                 <a
                   href="https://www.amazon.com/mn/dcw/myx.html/ref=kinw_myk_surl_2#/home/settings/"
                   target="_blank"
@@ -122,15 +129,14 @@ class Settings extends React.Component {
                 >
                   here
                 </a>.
-              </div>
-            )}
+              </div>}
             <TextField
               hintText="your Send-To-Kindle email goes here"
               floatingLabelText="Send-To-Kindle E-Mail"
               floatingLabelFixed={true}
               value={this.state.deliveryEmail}
               onChange={(event, newValue) => {
-                this.setState({
+                this.setState ({
                   deliveryEmail: newValue,
                 });
               }}
@@ -141,7 +147,7 @@ class Settings extends React.Component {
               label="Notify me by email in case there were no articles to send in scheduled delivery"
               checked={this.state.notifyNoArticles}
               onCheck={(event, newValue) => {
-                this.setState({
+                this.setState ({
                   notifyNoArticles: newValue,
                 });
               }}
@@ -160,8 +166,7 @@ class Settings extends React.Component {
               autoHideDuration={4000}
               onRequestClose={this.handleSnackbarClose}
             />
-          </div>
-        )}
+          </div>}
       </div>
     );
   }
@@ -170,6 +175,7 @@ class Settings extends React.Component {
 Settings.propTypes = {
   token: PropTypes.string,
   url: PropTypes.string.isRequired,
+  setUserProfile: PropTypes.func.isRequired,
 };
 
 export default Settings;

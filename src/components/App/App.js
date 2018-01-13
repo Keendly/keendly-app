@@ -12,13 +12,69 @@ import PrivateRoute from './PrivateRoute';
 
 import './App.css';
 
-const URL =
-  process.env.NODE_ENV === 'development'
-    ? 'https://fmip59w73h.execute-api.eu-west-1.amazonaws.com/dev'
-    : 'https://m1ndoce0cl.execute-api.eu-west-1.amazonaws.com/v1';
+const URL = process.env.NODE_ENV === 'development'
+  ? 'https://fmip59w73h.execute-api.eu-west-1.amazonaws.com/dev'
+  : 'https://m1ndoce0cl.execute-api.eu-west-1.amazonaws.com/v1';
+
+const AUTH_KEY = 'k33ndly_535510n';
+
+const getToken = () => {
+  return localStorage.getItem (AUTH_KEY);
+};
+
+const logOut = () => {
+  localStorage.removeItem (AUTH_KEY);
+};
 
 class App extends Component {
-  render() {
+  constructor (props) {
+    super (props);
+    this.state = {
+      loggedIn: false,
+      userProfile: null,
+    };
+
+    this.setUserProfile = this.setUserProfile.bind (this);
+    this.logIn = this.logIn.bind (this);
+  }
+
+  componentWillMount () {
+    if (getToken ()) {
+      this.loadUserProfile ();
+    }
+  }
+
+  loadUserProfile () {
+    fetch (URL + '/users/self', {
+      headers: {
+        Authorization: getToken (),
+      },
+    })
+      .then (response => response.json ())
+      .then (json => {
+        this.setState ({
+          userProfile: json,
+          loggedIn: true,
+        });
+      })
+      .catch (error => {
+        localStorage.removeItem (AUTH_KEY);
+        window.location.replace ('login');
+      });
+  }
+
+  setUserProfile (userProfile) {
+    this.setState ({
+      userProfile: userProfile,
+    });
+  }
+
+  logIn (token) {
+    localStorage.setItem (AUTH_KEY, token);
+    this.loadUserProfile ();
+  }
+
+  render () {
     return (
       <MuiThemeProvider>
         <Router>
@@ -27,7 +83,13 @@ class App extends Component {
               exact
               path="/login"
               render={props => {
-                return <Login url={URL} error={props.location.error} />;
+                return (
+                  <Login
+                    url={URL}
+                    logIn={this.logIn}
+                    error={props.location.error}
+                  />
+                );
               }}
             />
             <Route
@@ -38,6 +100,7 @@ class App extends Component {
                     url={URL}
                     provider="INOREADER"
                     query={props.location.search}
+                    logIn={this.logIn}
                   />
                 );
               }}
@@ -49,22 +112,49 @@ class App extends Component {
                   url={URL}
                   provider="NEWSBLUR"
                   query={props.location.search}
+                  logIn={this.logIn}
                 />
               )}
             />
-            <PrivateRoute exact path="/" render={() => <Home url={URL} />} />
+
+            <PrivateRoute
+              exact
+              path="/"
+              render={() => (
+                <Home
+                  url={URL}
+                  token={getToken ()}
+                  userProfile={this.state.userProfile}
+                />
+              )}
+              getToken={getToken}
+              logOut={logOut}
+            />
             <PrivateRoute
               path="/subscriptions"
-              render={() => <Subscriptions url={URL} />}
+              render={() => <Subscriptions url={URL} token={getToken ()} />}
+              getToken={getToken}
+              logOut={logOut}
             />
             <PrivateRoute
               path="/deliveries"
-              render={() => <Deliveries url={URL} />}
+              render={() => <Deliveries url={URL} token={getToken ()} />}
+              getToken={getToken}
+              logOut={logOut}
             />
             <PrivateRoute
               path="/settings"
-              render={() => <Settings url={URL} />}
+              render={() => (
+                <Settings
+                  url={URL}
+                  token={getToken ()}
+                  setUserProfile={this.setUserProfile}
+                />
+              )}
+              getToken={getToken}
+              logOut={logOut}
             />
+            }
           </div>
         </Router>
       </MuiThemeProvider>

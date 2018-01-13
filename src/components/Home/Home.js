@@ -39,34 +39,29 @@ const nextDelivery = subscriptions => {
   if (!subscriptions) {
     return;
   }
-  const now = moment()
-    .toDate()
-    .getTime();
-  const scheduled = subscriptions.map(subscription => {
+  const now = moment ().toDate ().getTime ();
+  const scheduled = subscriptions.map (subscription => {
     const tz = subscription.timezone;
-    var nowInTz = moment(now).tz(tz);
+    var nowInTz = moment (now).tz (tz);
     let nextScheduledDelivery = null;
-    if (nowInTz.format('HH:mm') > subscription.time) {
+    if (nowInTz.format ('HH:mm') > subscription.time) {
       nextScheduledDelivery =
-        nowInTz.add(1, 'd').format('YYYY-MM-DD') + ' ' + subscription.time;
+        nowInTz.add (1, 'd').format ('YYYY-MM-DD') + ' ' + subscription.time;
       // next tomorrow
     } else {
       nextScheduledDelivery =
-        nowInTz.format('YYYY-MM-DD') + ' ' + subscription.time;
+        nowInTz.format ('YYYY-MM-DD') + ' ' + subscription.time;
       // today
     }
-    return moment
-      .tz(nextScheduledDelivery, tz)
-      .toDate()
-      .getTime();
+    return moment.tz (nextScheduledDelivery, tz).toDate ().getTime ();
   });
-  const soonestNextScheduledDelivery = Math.min.apply(Math, scheduled);
-  return moment(now).to(moment(soonestNextScheduledDelivery));
+  const soonestNextScheduledDelivery = Math.min.apply (Math, scheduled);
+  return moment (now).to (moment (soonestNextScheduledDelivery));
 };
 
 class Home extends React.Component {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super (props);
     this.state = {
       data: [],
       search_text: '',
@@ -77,115 +72,92 @@ class Home extends React.Component {
       deliverySnackbarOpen: false,
       subscriptionSnackbarOpen: false,
       nothingSelectedDialogOpen: false,
-      deliveryEmailSet: false,
     };
-    this.onSearchTextChanged = this.onSearchTextChanged.bind(this);
-    this.handleDeliveryOpen = this.handleDeliveryOpen.bind(this);
-    this.handleDeliveryClose = this.handleDeliveryClose.bind(this);
-    this.handleSubscriptionOpen = this.handleSubscriptionOpen.bind(this);
-    this.handleSubscriptionClose = this.handleSubscriptionClose.bind(this);
-    this.onSelectAllClick = this.onSelectAllClick.bind(this);
-    this.handleDeliverNow = this.handleDeliverNow.bind(this);
-    this.handleSubscribe = this.handleSubscribe.bind(this);
+    this.onSearchTextChanged = this.onSearchTextChanged.bind (this);
+    this.handleDeliveryOpen = this.handleDeliveryOpen.bind (this);
+    this.handleDeliveryClose = this.handleDeliveryClose.bind (this);
+    this.handleSubscriptionOpen = this.handleSubscriptionOpen.bind (this);
+    this.handleSubscriptionClose = this.handleSubscriptionClose.bind (this);
+    this.onSelectAllClick = this.onSelectAllClick.bind (this);
+    this.handleDeliverNow = this.handleDeliverNow.bind (this);
+    this.handleSubscribe = this.handleSubscribe.bind (this);
     this.categoryColors = {};
   }
 
-  componentWillMount() {
-    this.loadFeedsFromServer();
-    this.loadUserProfile();
+  componentWillMount () {
+    this.setState ({
+      loading: true,
+    });
+    if (this.props.userProfile) {
+      this.loadFeedsFromServer ();
+    }
   }
 
-  componentDidMount() {
+  componentWillReceiveProps (newProps) {
+    if (newProps.userProfile) {
+      this.setState ({
+        deliveryEmailSet: !!newProps.userProfile.deliveryEmail,
+      });
+      this.loadFeedsFromServer ();
+    }
+  }
+
+  componentDidMount () {
     document.title = 'Home | Keendly';
   }
 
-  loadUserProfile() {
-    this.setState({
-      loading: true,
-    });
-    fetch(this.props.url + '/users/self', {
+  loadFeedsFromServer () {
+    fetch (this.props.url + '/feeds', {
       headers: {
         Authorization: this.props.token,
       },
     })
-      .then(response => response.json())
-      .then(json => {
-        const deliveryEmail = json.deliveryEmail;
-        if (deliveryEmail) {
-          this.setState({
-            deliveryEmailSet: true,
-          });
-        }
-        this.setState((state, props) => {
+      .then (response => response.json ())
+      .then (json => {
+        this.setState ((state, props) => {
           return {
-            deliveryEmailSet: !!json.deliveryEmail,
-            loadingUser: false,
-            loading: state.loadingFeeds,
+            data: json.filter (n => n.title),
+            loading: false,
           };
         });
       })
-      .catch(error => {
-        console.log(error);
-        window.location.replace('login');
+      .catch (error => {
+        window.location.replace ('login');
       });
   }
 
-  loadFeedsFromServer() {
-    this.setState({
-      loadingFeeds: true,
-    });
-    fetch(this.props.url + '/feeds', {
-      headers: {
-        Authorization: this.props.token,
-      },
-    })
-      .then(response => response.json())
-      .then(json => {
-        this.setState((state, props) => {
-          return {
-            data: json.filter(n => n.title),
-            loadingFeeds: false,
-            loading: state.loadingUser,
-          };
-        });
-      })
-      .catch(error => {
-        window.location.replace('login');
-      });
-  }
-
-  categoryColor(category) {
+  categoryColor (category) {
     if (!this.categoryColors[category]) {
       const index =
-        Object.keys(this.categoryColors).length %
-        Object.keys(CATEGORY_COLORS).length;
-      const color = Object.keys(CATEGORY_COLORS)[index];
+        Object.keys (this.categoryColors).length %
+        Object.keys (CATEGORY_COLORS).length;
+      const color = Object.keys (CATEGORY_COLORS)[index];
       this.categoryColors[category] = color;
       return color;
     }
     return this.categoryColors[category];
   }
 
-  onSelectAllClick(event, isInputChecked) {
+  onSelectAllClick (event, isInputChecked) {
     if (isInputChecked) {
-      this.setState({selectedFeeds: this.state.data});
+      this.setState ({selectedFeeds: this.state.data});
     } else {
-      this.setState({selectedFeeds: []});
+      this.setState ({selectedFeeds: []});
     }
   }
 
-  onSelectClick(feed, isInputChecked) {
+  onSelectClick (feed, isInputChecked) {
     if (isInputChecked) {
-      this.setState((previousState, props) => {
-        previousState.selectedFeeds.push(feed);
+      this.setState ((previousState, props) => {
+        previousState.selectedFeeds.push (feed);
         return {
           selectedFeeds: previousState.selectedFeeds,
         };
       });
     } else {
-      this.setState((previousState, props) => {
-        const index = previousState.selectedFeeds.indexOf(feed);
-        previousState.selectedFeeds.splice(index, 1);
+      this.setState ((previousState, props) => {
+        const index = previousState.selectedFeeds.indexOf (feed);
+        previousState.selectedFeeds.splice (index, 1);
         return {
           selectedFeeds: previousState.selectedFeeds,
         };
@@ -193,37 +165,37 @@ class Home extends React.Component {
     }
   }
 
-  onSearchTextChanged(e) {
-    this.setState({
+  onSearchTextChanged (e) {
+    this.setState ({
       search_text: e.target.value,
     });
   }
 
   handleDeliveryOpen = () => {
     if (this.state.selectedFeeds.length === 0) {
-      this.setState({
+      this.setState ({
         nothingSelectedDialogOpen: true,
       });
     } else {
-      this.setState({deliveryOpen: true});
+      this.setState ({deliveryOpen: true});
     }
   };
 
   handleDeliveryClose = () => {
-    this.setState({deliveryOpen: false});
+    this.setState ({deliveryOpen: false});
   };
 
-  handleDeliverNow(includeImages, extractArticle, markAsRead, callback) {
-    fetch(this.props.url + '/deliveries', {
+  handleDeliverNow (includeImages, extractArticle, markAsRead, callback) {
+    fetch (this.props.url + '/deliveries', {
       headers: {
         Authorization: this.props.token,
         'Content-Type': 'application/json',
       },
       method: 'POST',
-      body: JSON.stringify({
+      body: JSON.stringify ({
         manual: true,
-        timezone: moment.tz.guess(),
-        items: this.state.selectedFeeds.map(f => {
+        timezone: moment.tz.guess (),
+        items: this.state.selectedFeeds.map (f => {
           return {
             title: f.title,
             feedId: f.feedId,
@@ -233,46 +205,46 @@ class Home extends React.Component {
           };
         }),
       }),
-    }).then(response => {
+    }).then (response => {
       if (response.ok) {
-        this.setState({
+        this.setState ({
           deliverySnackbarOpen: true,
           deliveryOpen: false,
           error: false,
         });
-        this.loadFeedsFromServer();
+        this.loadFeedsFromServer ();
       } else if (response.status === 400) {
-        response.json().then(json => {
-          this.setState({
+        response.json ().then (json => {
+          this.setState ({
             error: json.description,
             deliveryOpen: false,
           });
         });
       } else {
-        this.setState({
+        this.setState ({
           error: 'Error starting delivery, try again later',
           deliveryOpen: false,
         });
       }
-      callback();
+      callback ();
     });
   }
 
   handleSubscriptionOpen = () => {
     if (this.state.selectedFeeds.length === 0) {
-      this.setState({
+      this.setState ({
         nothingSelectedDialogOpen: true,
       });
     } else {
-      this.setState({subscriptionOpen: true});
+      this.setState ({subscriptionOpen: true});
     }
   };
 
   handleSubscriptionClose = () => {
-    this.setState({subscriptionOpen: false});
+    this.setState ({subscriptionOpen: false});
   };
 
-  handleSubscribe(
+  handleSubscribe (
     time,
     timezone,
     includeImages,
@@ -280,16 +252,16 @@ class Home extends React.Component {
     markAsRead,
     callback
   ) {
-    fetch(this.props.url + '/subscriptions', {
+    fetch (this.props.url + '/subscriptions', {
       headers: {
         Authorization: this.props.token,
         'Content-Type': 'application/json',
       },
       method: 'POST',
-      body: JSON.stringify({
+      body: JSON.stringify ({
         time: time,
         timezone: timezone,
-        feeds: this.state.selectedFeeds.map(f => {
+        feeds: this.state.selectedFeeds.map (f => {
           return {
             title: f.title,
             feedId: f.feedId,
@@ -299,66 +271,64 @@ class Home extends React.Component {
           };
         }),
       }),
-    }).then(response => {
+    }).then (response => {
       if (response.ok) {
-        this.setState({
+        this.setState ({
           subscriptionSnackbarOpen: true,
           subscriptionOpen: false,
           error: false,
         });
-        this.loadFeedsFromServer();
+        this.loadFeedsFromServer ();
       } else if (response.status === 400) {
-        response.json().then(json => {
-          this.setState({
+        response.json ().then (json => {
+          this.setState ({
             error: json.description,
             subscriptionOpen: false,
           });
         });
       } else {
-        this.setState({
+        this.setState ({
           error: 'Error starting delivery, try again later',
           subscriptionOpen: false,
         });
       }
-      callback();
+      callback ();
     });
   }
 
-  renderChip(data, key) {
-    const color = this.categoryColor(data);
+  renderChip (data, key) {
+    const color = this.categoryColor (data);
     const style = {'background-color': color};
     const classNames = [
       'Home__category_chip',
       'Home__category_chip_' + CATEGORY_COLORS[color],
     ];
     return (
-      <Chip className={classNames.join(' ')} style={style} key={key}>
+      <Chip className={classNames.join (' ')} style={style} key={key}>
         {data}
       </Chip>
     );
   }
 
-  render() {
-    const feedIds = this.state.selectedFeeds.map(feed => feed.feedId);
+  render () {
+    const feedIds = this.state.selectedFeeds.map (feed => feed.feedId);
     const buttonClasses = this.state.deliveryEmailSet
       ? 'Home__button Home__button__enabled'
       : 'Home__button';
     return (
       <div className="Home__wrapper">
         {this.state.loading && <LinearProgress mode="indeterminate" />}
-        {!this.state.loading && (
+        {!this.state.loading &&
           <div className="Home__table">
-            {this.state.error && (
+            {this.state.error &&
               <div className="Home__message Home__error">
                 {this.state.error}
-              </div>
-            )}
-            {!this.state.deliveryEmailSet && (
+              </div>}
+            {!this.state.deliveryEmailSet &&
               <div className="Home__message Home__info">
                 Send-To-Kindle email is not configured, please go to{' '}
                 <Link to="/settings">settings</Link> to set it.
-              </div>
-            )}
+              </div>}
             <div className="Home__buttons">
               <RaisedButton
                 className={buttonClasses}
@@ -390,7 +360,7 @@ class Home extends React.Component {
                 modal={false}
                 open={this.state.nothingSelectedDialogOpen}
                 onRequestClose={() => {
-                  this.setState({
+                  this.setState ({
                     nothingSelectedDialogOpen: false,
                   });
                 }}
@@ -421,7 +391,7 @@ class Home extends React.Component {
                         onCheck={this.onSelectAllClick}
                         checked={
                           this.state.selectedFeeds.length ===
-                          this.state.data.length
+                            this.state.data.length
                         }
                       />
                     </TableCell>
@@ -435,66 +405,64 @@ class Home extends React.Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {this.state.data.map(
+                  {this.state.data.map (
                     (feed, index) =>
                       (!this.state.search_text ||
                         feed.title
-                          .toLowerCase()
-                          .includes(this.state.search_text.toLowerCase())) && (
-                        <TableRow key={index} className="Home__feed_row">
-                          <TableCell checkbox className="Home__table_checkbox">
-                            <Checkbox
-                              onCheck={(event, isInputChecked) =>
-                                this.onSelectClick(feed, isInputChecked)}
-                              checked={feedIds.indexOf(feed.feedId) !== -1}
-                            />
-                          </TableCell>
+                          .toLowerCase ()
+                          .includes (this.state.search_text.toLowerCase ())) &&
+                      <TableRow key={index} className="Home__feed_row">
+                        <TableCell checkbox className="Home__table_checkbox">
+                          <Checkbox
+                            onCheck={(event, isInputChecked) =>
+                              this.onSelectClick (feed, isInputChecked)}
+                            checked={feedIds.indexOf (feed.feedId) !== -1}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <div className="Home__feed_title">
+                            <Badge
+                              badgeContent={
+                                feed.unreadCount > 99
+                                  ? '99+'
+                                  : feed.unreadCount ? feed.unreadCount : '0'
+                              }
+                              className="Home__feed_badge"
+                            >
+                              {feed.title}
+                            </Badge>
+                          </div>
+                          {feed.categories &&
+                            feed.categories.map (
+                              this.renderChip,
+                              this,
+                              feed.feedId
+                            )}
+                        </TableCell>
+                        <AboveMobile>
                           <TableCell>
-                            <div className="Home__feed_title">
-                              <Badge
-                                badgeContent={
-                                  feed.unreadCount > 99
-                                    ? '99+'
-                                    : feed.unreadCount ? feed.unreadCount : '0'
-                                }
-                                className="Home__feed_badge"
-                              >
-                                {feed.title}
-                              </Badge>
-                            </div>
-                            {feed.categories &&
-                              feed.categories.map(
-                                this.renderChip,
-                                this,
-                                feed.feedId
-                              )}
+                            {feed.lastDelivery &&
+                              moment (
+                                feed.lastDelivery.deliveryDate
+                              ).fromNow ()}
                           </TableCell>
-                          <AboveMobile>
-                            <TableCell>
-                              {feed.lastDelivery &&
-                                moment(
-                                  feed.lastDelivery.deliveryDate
-                                ).fromNow()}
-                            </TableCell>
-                          </AboveMobile>
-                          <Desktop>
-                            <TableCell>
-                              {nextDelivery(feed.subscriptions)}
-                            </TableCell>
-                          </Desktop>
-                        </TableRow>
-                      )
+                        </AboveMobile>
+                        <Desktop>
+                          <TableCell>
+                            {nextDelivery (feed.subscriptions)}
+                          </TableCell>
+                        </Desktop>
+                      </TableRow>
                   )}
                 </TableBody>
               </Table>
             }
-          </div>
-        )}
+          </div>}
         <Snackbar
           open={this.state.deliverySnackbarOpen}
           message="Delivery started"
           onRequestClose={() => {
-            this.setState({
+            this.setState ({
               deliverySnackbarOpen: false,
             });
           }}
@@ -503,7 +471,7 @@ class Home extends React.Component {
           open={this.state.subscriptionSnackbarOpen}
           message="Deliveries scheduled"
           onRequestClose={() => {
-            this.setState({
+            this.setState ({
               subscriptionSnackbarOpen: false,
             });
           }}
@@ -516,6 +484,7 @@ class Home extends React.Component {
 Home.propTypes = {
   token: PropTypes.string,
   url: PropTypes.string.isRequired,
+  userProfile: PropTypes.object,
 };
 
 export default Home;
