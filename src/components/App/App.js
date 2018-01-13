@@ -154,7 +154,6 @@ class App extends Component {
               getToken={getToken}
               logOut={logOut}
             />
-            }
           </div>
         </Router>
       </MuiThemeProvider>
