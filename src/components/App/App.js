@@ -92,7 +92,7 @@ class App extends Component {
         .then (subscription => {
           // toast ('Subscribed successfully.');
           console.info ('Push notification subscribed.');
-          console.log (subscription);
+          console.log (JSON.stringify (subscription));
           //saveSubscriptionID(subscription);
           // changePushStatus (true);
         })
