@@ -2,13 +2,14 @@ import React from 'react';
 
 self.addEventListener ('push', function (event) {
   let title, body;
-  if (isJsonString (event.data.text)) {
-    const json = JSON.parse (event.data.text);
+  const text = event.data.text ();
+  if (isJsonString (text)) {
+    const json = JSON.parse (text);
     title = json.title;
     body = json.body;
   } else {
     title = 'Keendly';
-    body = event.data.text;
+    body = text;
   }
 
   const options = {
