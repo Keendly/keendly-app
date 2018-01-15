@@ -92,7 +92,24 @@ class App extends Component {
         .then (subscription => {
           // toast ('Subscribed successfully.');
           console.info ('Push notification subscribed.');
-          console.log (JSON.stringify (subscription));
+
+          // Get public key and user auth from the subscription object
+          var key = subscription.getKey ? subscription.getKey ('p256dh') : '';
+          var auth = subscription.getKey ? subscription.getKey ('auth') : '';
+
+          console.log (
+            JSON.stringify ({
+              endpoint: subscription.endpoint,
+              // Take byte[] and turn it into a base64 encoded string suitable for
+              // POSTing to a server over HTTP
+              key: key
+                ? btoa (String.fromCharCode.apply (null, new Uint8Array (key)))
+                : '',
+              auth: auth
+                ? btoa (String.fromCharCode.apply (null, new Uint8Array (auth)))
+                : '',
+            })
+          );
           //saveSubscriptionID(subscription);
           // changePushStatus (true);
         })
