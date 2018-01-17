@@ -159,31 +159,35 @@ class App extends Component {
           applicationServerKey: publicKey,
         })
         .then (subscription => {
-          // toast ('Subscribed successfully.');
-          console.info ('Push notification subscribed.');
+          console.log (subscription);
 
           // Get public key and user auth from the subscription object
           var key = subscription.getKey ? subscription.getKey ('p256dh') : '';
           var auth = subscription.getKey ? subscription.getKey ('auth') : '';
 
-          console.log (
-            JSON.stringify ({
+          fetch (this.props.url + '/users/self/pushsubscriptions', {
+            headers: {
+              Authorization: this.props.token,
+              'Content-Type': 'application/json',
+            },
+            method: 'POST',
+            body: JSON.stringify ({
               endpoint: subscription.endpoint,
-              // Take byte[] and turn it into a base64 encoded string suitable for
-              // POSTing to a server over HTTP
+              // Take byte[] and turn it into a base64 encoded string
               key: key
                 ? btoa (String.fromCharCode.apply (null, new Uint8Array (key)))
                 : '',
               auth: auth
                 ? btoa (String.fromCharCode.apply (null, new Uint8Array (auth)))
                 : '',
-            })
-          );
-          //saveSubscriptionID(subscription);
-          // changePushStatus (true);
+            }),
+          }).then (response => {
+            if (response.ok) {
+              this.loadUserProfile ();
+            }
+          });
         })
         .catch (error => {
-          // changePushStatus (false);
           console.error ('Push notification subscription error: ', error);
         });
     });
