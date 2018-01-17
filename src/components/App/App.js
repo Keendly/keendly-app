@@ -165,7 +165,7 @@ class App extends Component {
 
           fetch (URL + '/users/self/pushsubscriptions', {
             headers: {
-              Authorization: this.props.token,
+              Authorization: getToken (),
               'Content-Type': 'application/json',
             },
             method: 'POST',
