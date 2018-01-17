@@ -181,11 +181,15 @@ class App extends Component {
                 ? btoa (String.fromCharCode.apply (null, new Uint8Array (auth)))
                 : '',
             }),
-          }).then (response => {
-            if (response.ok) {
-              this.loadUserProfile ();
-            }
-          });
+          })
+            .then (response => {
+              if (response.ok) {
+                this.loadUserProfile ();
+              }
+            })
+            .catch (error => {
+              // swallow to avoid propagating
+            });
         })
         .catch (error => {
           console.error ('Push notification subscription error: ', error);
