@@ -40,11 +40,11 @@ class App extends Component {
 
   componentWillMount () {
     if (getToken ()) {
-      this.loadUserProfile ();
+      this.loadUserProfile (true);
     }
   }
 
-  loadUserProfile () {
+  loadUserProfile (subscribePush) {
     fetch (URL + '/users/self', {
       headers: {
         Authorization: getToken (),
@@ -56,8 +56,10 @@ class App extends Component {
           userProfile: json,
           loggedIn: true,
         });
-        if (json.email === 'moomeen@gmail.com') {
-          this.subscribePush ();
+        if (subscribePush) {
+          if (json.email === 'moomeen@gmail.com') {
+            this.subscribePush ();
+          }
         }
       })
       .catch (error => {
@@ -74,7 +76,7 @@ class App extends Component {
 
   logIn (token) {
     localStorage.setItem (AUTH_KEY, token);
-    this.loadUserProfile ();
+    this.loadUserProfile (true);
   }
 
   subscribePush () {
@@ -182,7 +184,7 @@ class App extends Component {
           })
             .then (response => {
               if (response.ok) {
-                this.loadUserProfile ();
+                this.loadUserProfile (false);
               }
             })
             .catch (error => {
