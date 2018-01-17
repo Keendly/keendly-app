@@ -159,8 +159,6 @@ class App extends Component {
           applicationServerKey: publicKey,
         })
         .then (subscription => {
-          console.log (subscription);
-
           // Get public key and user auth from the subscription object
           var key = subscription.getKey ? subscription.getKey ('p256dh') : '';
           var auth = subscription.getKey ? subscription.getKey ('auth') : '';
