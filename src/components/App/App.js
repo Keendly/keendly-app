@@ -165,7 +165,7 @@ class App extends Component {
           var key = subscription.getKey ? subscription.getKey ('p256dh') : '';
           var auth = subscription.getKey ? subscription.getKey ('auth') : '';
 
-          fetch (this.props.url + '/users/self/pushsubscriptions', {
+          fetch (URL + '/users/self/pushsubscriptions', {
             headers: {
               Authorization: this.props.token,
               'Content-Type': 'application/json',
