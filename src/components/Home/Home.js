@@ -111,6 +111,7 @@ class Home extends React.Component {
       headers: {
         Authorization: this.props.token,
       },
+      mode: 'cors',
     })
       .then (response => response.json ())
       .then (json => {
