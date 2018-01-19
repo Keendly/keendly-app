@@ -116,8 +116,8 @@ class Home extends React.Component {
       .then (json => {
         this.setState ((state, props) => {
           return {
-            // data: json.filter (n => n.title),
-            data: json,
+            data: json.filter (n => n.title),
+            // data: json,
             loading: false,
           };
         });
