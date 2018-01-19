@@ -111,13 +111,13 @@ class Home extends React.Component {
       headers: {
         Authorization: this.props.token,
       },
-      mode: 'cors',
     })
       .then (response => response.json ())
       .then (json => {
         this.setState ((state, props) => {
           return {
-            data: json.filter (n => n.title),
+            // data: json.filter (n => n.title),
+            data: json,
             loading: false,
           };
         });
