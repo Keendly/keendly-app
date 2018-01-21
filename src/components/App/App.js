@@ -26,6 +26,10 @@ const logOut = () => {
   localStorage.removeItem (AUTH_KEY);
 };
 
+const base64 = string => {
+  return btoa (String.fromCharCode.apply (null, new Uint8Array (string)));
+};
+
 class App extends Component {
   constructor (props) {
     super (props);
@@ -81,7 +85,7 @@ class App extends Component {
 
   subscribePush () {
     if (!navigator || !navigator.serviceWorker) {
-        return;
+      return;
     }
     navigator.serviceWorker.ready.then (registration => {
       if (!registration.pushManager) {
@@ -165,8 +169,23 @@ class App extends Component {
         })
         .then (subscription => {
           // Get public key and user auth from the subscription object
-          var key = subscription.getKey ? subscription.getKey ('p256dh') : '';
-          var auth = subscription.getKey ? subscription.getKey ('auth') : '';
+          var key = subscription.getKey
+            ? base64 (subscription.getKey ('p256dh'))
+            : '';
+          var auth = subscription.getKey
+            ? base64 (subscription.getKey ('auth'))
+            : '';
+
+          this.state.userProfile.pushSubscriptions.each (s => {
+            if (
+              s.endpoint === subscription.endpoint &&
+              s.key === key &&
+              s.auth === auth
+            ) {
+              console.log ('got it!');
+              return;
+            }
+          });
 
           fetch (URL + '/users/self/pushsubscriptions', {
             headers: {
@@ -177,12 +196,8 @@ class App extends Component {
             body: JSON.stringify ({
               endpoint: subscription.endpoint,
               // Take byte[] and turn it into a base64 encoded string
-              key: key
-                ? btoa (String.fromCharCode.apply (null, new Uint8Array (key)))
-                : '',
-              auth: auth
-                ? btoa (String.fromCharCode.apply (null, new Uint8Array (auth)))
-                : '',
+              key: key,
+              auth: auth,
             }),
           })
             .then (response => {
