@@ -80,6 +80,9 @@ class App extends Component {
   }
 
   subscribePush () {
+    if (!navigator || !navigator.serviceWorker) {
+        return;
+    }
     navigator.serviceWorker.ready.then (registration => {
       if (!registration.pushManager) {
         alert ("Your browser doesn't support push notification.");
