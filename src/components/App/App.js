@@ -176,12 +176,13 @@ class App extends Component {
             ? base64 (subscription.getKey ('auth'))
             : '';
 
-          this.state.userProfile.pushSubscriptions.forEach (s => {
-            if (s.endpoint === subscription.endpoint && s.auth === auth) {
-              console.log ('got it!');
-              return;
-            }
-          });
+          if (this.state.userProfile.pushSubscriptions) {
+            this.state.userProfile.pushSubscriptions.forEach (s => {
+              if (s.endpoint === subscription.endpoint && s.auth === auth) {
+                return;
+              }
+            });
+          }
 
           fetch (URL + '/users/self/pushsubscriptions', {
             headers: {
