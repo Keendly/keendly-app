@@ -176,12 +176,8 @@ class App extends Component {
             ? base64 (subscription.getKey ('auth'))
             : '';
 
-          this.state.userProfile.pushSubscriptions.each (s => {
-            if (
-              s.endpoint === subscription.endpoint &&
-              s.key === key &&
-              s.auth === auth
-            ) {
+          this.state.userProfile.pushSubscriptions.forEach (s => {
+            if (s.endpoint === subscription.endpoint && s.auth === auth) {
               console.log ('got it!');
               return;
             }
