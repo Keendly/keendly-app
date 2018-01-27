@@ -61,9 +61,7 @@ class App extends Component {
           loggedIn: true,
         });
         if (subscribePush) {
-          if (json.email === 'moomeen@gmail.com') {
-            this.subscribePush ();
-          }
+          this.subscribePush ();
         }
       })
       .catch (error => {
