@@ -22,8 +22,8 @@ import './Subscriptions.css';
 const PAGE_SIZE = 20;
 
 class Subscriptions extends React.Component {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super (props);
     this.state = {
       page: 1,
       data: [],
@@ -33,30 +33,30 @@ class Subscriptions extends React.Component {
       snackbarOpen: false,
     };
 
-    this.handlePageChanged = this.handlePageChanged.bind(this);
-    this.onSelectAllClick = this.onSelectAllClick.bind(this);
-    this.handleDeleteButtonClick = this.handleDeleteButtonClick.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);
+    this.handlePageChanged = this.handlePageChanged.bind (this);
+    this.onSelectAllClick = this.onSelectAllClick.bind (this);
+    this.handleDeleteButtonClick = this.handleDeleteButtonClick.bind (this);
+    this.handleDelete = this.handleDelete.bind (this);
   }
 
-  componentWillMount() {
-    this.loadSubscriptionsFromServer(1);
+  componentWillMount () {
+    this.loadSubscriptionsFromServer (1);
   }
 
-  componentDidMount() {
+  componentDidMount () {
     document.title = 'Scheduled | Keendly';
   }
 
-  handlePageChanged(page) {
-    this.setState({page});
-    this.loadSubscriptionsFromServer(page);
+  handlePageChanged (page) {
+    this.setState ({page});
+    this.loadSubscriptionsFromServer (page);
   }
 
-  loadSubscriptionsFromServer(page) {
-    this.setState({
+  loadSubscriptionsFromServer (page) {
+    this.setState ({
       loading: true,
     });
-    fetch(
+    fetch (
       this.props.url + '/subscriptions?page=' + page + '&pageSize=' + PAGE_SIZE,
       {
         headers: {
@@ -64,38 +64,38 @@ class Subscriptions extends React.Component {
         },
       }
     )
-      .then(response => response.json())
-      .then(json => {
-        this.setState({
+      .then (response => response.json ())
+      .then (json => {
+        this.setState ({
           data: json,
           loading: false,
         });
       })
-      .catch(error => {
-        window.location.replace('login');
+      .catch (error => {
+        window.location.replace ('login');
       });
   }
 
-  onSelectAllClick(event, isInputChecked) {
+  onSelectAllClick (event, isInputChecked) {
     if (isInputChecked) {
-      this.setState({selected: this.state.data});
+      this.setState ({selected: this.state.data});
     } else {
-      this.setState({selected: []});
+      this.setState ({selected: []});
     }
   }
 
-  onSelectClick(subscription, isInputChecked) {
+  onSelectClick (subscription, isInputChecked) {
     if (isInputChecked) {
-      this.setState((previousState, props) => {
-        previousState.selected.push(subscription);
+      this.setState ((previousState, props) => {
+        previousState.selected.push (subscription);
         return {
           selected: previousState.selected,
         };
       });
     } else {
-      this.setState((previousState, props) => {
-        const index = previousState.selected.indexOf(subscription);
-        previousState.selected.splice(index, 1);
+      this.setState ((previousState, props) => {
+        const index = previousState.selected.indexOf (subscription);
+        previousState.selected.splice (index, 1);
         return {
           selected: previousState.selected,
         };
@@ -103,50 +103,50 @@ class Subscriptions extends React.Component {
     }
   }
 
-  handleDeleteButtonClick() {
+  handleDeleteButtonClick () {
     if (this.state.selected.length === 0) {
-      this.setState({
+      this.setState ({
         nothingSelectedDialogOpen: true,
       });
     } else {
-      this.setState({
+      this.setState ({
         deleteConfirmationDialog: true,
       });
     }
   }
 
-  handleDelete() {
-    this.setState({
+  handleDelete () {
+    this.setState ({
       loading: true,
     });
-    Promise.all(
-      this.state.selected.map(s => {
-        return fetch(this.props.url + '/subscriptions/' + s.id, {
+    Promise.all (
+      this.state.selected.map (s => {
+        return fetch (this.props.url + '/subscriptions/' + s.id, {
           headers: {
             Authorization: this.props.token,
           },
           method: 'DELETE',
         });
       })
-    ).then(() => {
-      this.setState({
+    ).then (() => {
+      this.setState ({
         loading: false,
         deleteConfirmationDialog: false,
         snackbarOpen: true,
         selected: [],
       });
-      this.loadSubscriptionsFromServer(1);
+      this.loadSubscriptionsFromServer (1);
     });
   }
 
   handleSnackbarClose = () => {
-    this.setState({
+    this.setState ({
       snackbarOpen: false,
     });
   };
 
-  render() {
-    const ids = this.state.selected.map(s => s.id);
+  render () {
+    const ids = this.state.selected.map (s => s.id);
 
     return (
       <div className="Subscriptions3__wrapper">
@@ -154,91 +154,96 @@ class Subscriptions extends React.Component {
         <div className="Subscriptions__table">
           {!this.state.loading &&
             this.state.data.length === 0 &&
-            this.state.page === 1 && (
-              <div className="Subscriptions__message">
-                It seems that you do not have any deliveries scheduled. Go to{' '}
-                <Link to="/">home</Link> to add one.
-              </div>
-            )}
+            this.state.page === 1 &&
+            <div className="Subscriptions__message">
+              It seems that you do not have any deliveries scheduled. Go to{' '}
+              <Link to="/">home</Link> to add one.
+            </div>}
           {!this.state.loading &&
-            (this.state.data.length !== 0 || this.state.page > 1) && (
-              <div>
-                <div className="Subscriptions__buttons">
-                  <RaisedButton
-                    className="Subscription__delete"
-                    onTouchTap={this.handleDeleteButtonClick}
-                    label="Delete"
-                    secondary={true}
-                  />
-                </div>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell checkbox>
-                        <Checkbox
-                          onCheck={this.onSelectAllClick}
-                          checked={
-                            this.state.selected.length ===
-                            this.state.data.length
-                          }
-                        />
-                      </TableCell>
-                      <TableCell>Feeds</TableCell>
-                      <AboveMobile>
-                        <TableCell style={{width: '100px'}}>Status</TableCell>
-                      </AboveMobile>
-                      <TableCell>Delivery time</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {this.state.data.map((subscription, index) => (
-                      <TableRow key={index}>
-                        <TableCell checkbox>
-                          <Checkbox
-                            onCheck={(event, isInputChecked) =>
-                              this.onSelectClick(subscription, isInputChecked)}
-                            checked={ids.indexOf(subscription.id) !== -1}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <div className="Subscriptions__feeds">
-                            {subscription.feeds &&
-                              subscription.feeds
-                                .map(item => item.title)
-                                .join(' \u2022 ')}
-                          </div>
-                        </TableCell>
-                        <AboveMobile>
-                          <TableCell>
-                            <Chip
-                              className="Subscriptions__status"
-                              style={{'background-color': '#C5E1A5'}}
-                            >
-                              active
-                            </Chip>
-                          </TableCell>
-                        </AboveMobile>
-                        <TableCell>
-                          <div className="Subscriptions__time">
-                            {subscription.time} ({subscription.timezone})
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                <Pagination
-                  currentPage={this.state.page}
-                  pageSize={PAGE_SIZE}
-                  handlePageChange={this.handlePageChanged}
+            (this.state.data.length !== 0 || this.state.page > 1) &&
+            <div>
+              <div className="Subscriptions__buttons">
+                <RaisedButton
+                  className="Subscription__delete"
+                  onTouchTap={this.handleDeleteButtonClick}
+                  label="Delete"
+                  secondary={true}
                 />
               </div>
-            )}
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell
+                      checkbox
+                      className="Subscriptions__table_checkbox"
+                    >
+                      <Checkbox
+                        onCheck={this.onSelectAllClick}
+                        checked={
+                          this.state.selected.length === this.state.data.length
+                        }
+                      />
+                    </TableCell>
+                    <TableCell className="Subscriptions__table_feeds">
+                      Feeds
+                    </TableCell>
+                    <AboveMobile>
+                      <TableCell style={{width: '100px'}}>Status</TableCell>
+                    </AboveMobile>
+                    <TableCell>Delivery time</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {this.state.data.map ((subscription, index) => (
+                    <TableRow key={index}>
+                      <TableCell
+                        checkbox
+                        className="Subscriptions__table_checkbox"
+                      >
+                        <Checkbox
+                          onCheck={(event, isInputChecked) =>
+                            this.onSelectClick (subscription, isInputChecked)}
+                          checked={ids.indexOf (subscription.id) !== -1}
+                        />
+                      </TableCell>
+                      <TableCell className="Subscriptions__table_feeds">
+                        <div className="Subscriptions__feeds">
+                          {subscription.feeds &&
+                            subscription.feeds
+                              .map (item => item.title)
+                              .join (' \u2022 ')}
+                        </div>
+                      </TableCell>
+                      <AboveMobile>
+                        <TableCell>
+                          <Chip
+                            className="Subscriptions__status"
+                            style={{'background-color': '#C5E1A5'}}
+                          >
+                            active
+                          </Chip>
+                        </TableCell>
+                      </AboveMobile>
+                      <TableCell>
+                        <div className="Subscriptions__time">
+                          {subscription.time} ({subscription.timezone})
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <Pagination
+                currentPage={this.state.page}
+                pageSize={PAGE_SIZE}
+                handlePageChange={this.handlePageChanged}
+              />
+            </div>}
           <Dialog
             modal={false}
             open={this.state.nothingSelectedDialogOpen}
             onRequestClose={() => {
-              this.setState({
+              this.setState ({
                 nothingSelectedDialogOpen: false,
               });
             }}
@@ -252,7 +257,7 @@ class Subscriptions extends React.Component {
                 label="No, cancel"
                 primary={true}
                 onClick={() => {
-                  this.setState({
+                  this.setState ({
                     deleteConfirmationDialog: false,
                   });
                 }}
@@ -267,7 +272,7 @@ class Subscriptions extends React.Component {
             modal={false}
             open={this.state.deleteConfirmationDialog}
             onRequestClose={() => {
-              this.setState({
+              this.setState ({
                 deleteConfirmationDialog: false,
               });
             }}
