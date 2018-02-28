@@ -72,6 +72,9 @@ class Home extends React.Component {
       deliverySnackbarOpen: false,
       subscriptionSnackbarOpen: false,
       nothingSelectedDialogOpen: false,
+      deliveryEmailSet: props.userProfile
+        ? !!props.userProfile.deliveryEmail
+        : false,
     };
     this.onSearchTextChanged = this.onSearchTextChanged.bind (this);
     this.handleDeliveryOpen = this.handleDeliveryOpen.bind (this);
