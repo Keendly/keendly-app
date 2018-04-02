@@ -5,6 +5,7 @@ import IconMenu from 'material-ui/IconMenu';
 import IconButton from 'material-ui/IconButton';
 import PersonIcon from 'material-ui/svg-icons/social/person';
 import MenuItem from 'material-ui/MenuItem';
+import Button from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import HomeIcon from 'material-ui/svg-icons/action/home';
 import TimerIcon from 'material-ui/svg-icons/image/timer';
@@ -28,6 +29,9 @@ import {Mobile, Desktop, AboveMobile, BelowDesktop} from '../../breakpoints';
 
 import {Route, Link, Redirect} from 'react-router-dom';
 
+import dropin from 'braintree-web-drop-in';
+import BraintreeDropin from 'braintree-dropin-react';
+
 class PrivateRoute extends Component {
   constructor (props) {
     super (props);
@@ -36,6 +40,7 @@ class PrivateRoute extends Component {
       feedbackOpen: false,
       feedbackSuccess: false,
       feedbackError: false,
+      paymentOpen: false,
     };
 
     this.handleFeedbackSubmit = this.handleFeedbackSubmit.bind (this);
@@ -43,6 +48,7 @@ class PrivateRoute extends Component {
     this.handleFeedbackMessageChange = this.handleFeedbackMessageChange.bind (
       this
     );
+    this.handlePaymentMethod = this.handlePaymentMethod.bind (this);
   }
 
   handleFeedbackSubmit () {
@@ -147,6 +153,38 @@ class PrivateRoute extends Component {
     );
   }
 
+  handlePaymentMethod = payload => {
+    const nonce = payload.nonce;
+    fetch (this.props.url + '/users/self/premium', {
+      headers: {
+        Authorization: this.props.getToken (),
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify ({
+        plainId: 'premium',
+        nonce: nonce,
+      }),
+    }).then (response => {
+      if (response.ok) {
+        this.setState ({
+          paymentOpen: false,
+        });
+        this.props.loadUserProfile (false);
+      } else if (response.status === 400) {
+        response.json ().then (json => {
+          this.setState ({
+            error: json.description,
+          });
+        });
+      } else {
+        this.setState ({
+          error: 'Error creating premium subscription',
+        });
+      }
+    });
+  };
+
   render () {
     const {render: Component, ...rest} = this.props;
 
@@ -170,13 +208,25 @@ class PrivateRoute extends Component {
                       <img className="Header__logo" src={logo} alt="logo" />
                     </ToolbarGroup>
                     <ToolbarGroup lastChild>
-                      <FlatButton
+                      {/* <FlatButton
                         label="Donate"
                         backgroundColor="#5cb85c"
                         icon={<LoyaltyIcon />}
                         className="dbox-donation-button"
                         href="https://donorbox.org/keendly"
-                      />
+                      /> */}
+                      {!this.props.isPremium () &&
+                        <FlatButton
+                          label="Premium"
+                          backgroundColor="#FF4081"
+                          icon={<LoyaltyIcon />}
+                          className="premium-button"
+                          onClick={() => {
+                            this.setState ({
+                              paymentOpen: true,
+                            });
+                          }}
+                        />}
                     </ToolbarGroup>
                   </Toolbar>
                   <Drawer
@@ -245,13 +295,25 @@ class PrivateRoute extends Component {
                         icon={<ListIcon />}
                         containerElement={<Link to="/deliveries" />}
                       />
-                      <FlatButton
+                      {/* <FlatButton
                         label="Donate"
                         backgroundColor="#5cb85c"
                         icon={<LoyaltyIcon />}
                         className="dbox-donation-button"
                         href="https://donorbox.org/keendly"
-                      />
+                      /> */}
+                      {!this.props.isPremium () &&
+                        <FlatButton
+                          label="Go Premium"
+                          backgroundColor="#FF4081"
+                          icon={<LoyaltyIcon />}
+                          className="premium-button"
+                          onClick={() => {
+                            this.setState ({
+                              paymentOpen: true,
+                            });
+                          }}
+                        />}
                     </ToolbarGroup>
                     <ToolbarGroup lastChild>
                       <ToolbarSeparator />
@@ -302,6 +364,7 @@ class PrivateRoute extends Component {
                 </div>
                 <Dialog
                   title="Leave feedback"
+                  contentStyle={{width: '95%'}}
                   actions={
                     !this.state.feedbackError && !this.state.feedbackSuccess
                       ? [
@@ -369,6 +432,50 @@ class PrivateRoute extends Component {
                       </a>
                     </div>}
                 </Dialog>
+                <Dialog
+                  title="Go Premium!"
+                  contentStyle={{width: '95%'}}
+                  actions={[]}
+                  modal={false}
+                  open={this.state.paymentOpen}
+                  onRequestClose={() => {
+                    this.setState ({
+                      paymentOpen: false,
+                    });
+                  }}
+                >
+                  <p>
+                    After
+                    {' '}
+                    <b>7 days of a trial period</b>
+                    , you will be charged
+                    {' '}
+                    <b>
+                      3€
+                      monthly
+                    </b>.
+                    <br />
+                    You can cancel the subscription any time, in user settings.
+                  </p>
+                  <BraintreeDropin
+                    braintree={dropin}
+                    authorizationToken="sandbox_s8cgnws2_yn7xvtxtxcgfw8fb"
+                    handlePaymentMethod={this.handlePaymentMethod}
+                    paypal="vault"
+                    renderSubmitButton={({onClick, isDisabled, text}) => {
+                      return (
+                        <Button
+                          label={text}
+                          backgroundColor="#5cb85c"
+                          disabled={isDisabled}
+                          labelColor="#ffffff"
+                          onClick={onClick}
+                        />
+                      );
+                    }}
+                    className="Payment__container"
+                  />
+                </Dialog>
               </div>
             : <Redirect
                 to={{pathname: '/login', state: {from: props.location}}}
@@ -380,8 +487,11 @@ class PrivateRoute extends Component {
 }
 
 PrivateRoute.propTypes = {
+  url: PropTypes.string.isRequired,
   getToken: PropTypes.func.isRequired,
   logOut: PropTypes.func.isRequired,
+  isPremium: PropTypes.func.isRequired,
+  loadUserProfile: PropTypes.func.isRequired,
 };
 
 export default PrivateRoute;

@@ -23,6 +23,15 @@
     background-color: #ffcdd2;
   }
 
+  &__premium {
+    color: #FF4081;
+    background-color: #ffcdd2;
+    overflow: auto;
+    div {
+      display: inline-block;
+    }
+  }
+
   &__save {
     button {
       background-color: $primary !important;

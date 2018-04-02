@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "braintree-dropin-react": "^0.0.2",
+    "braintree-web-drop-in": "^1.10.0",
     "cra-append-sw": "^2.1.1",
     "material-ui": "^v0.18.7",
     "material-ui-next": "file:packages/material-ui-next",
