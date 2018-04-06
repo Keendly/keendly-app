@@ -257,7 +257,17 @@ class App extends Component {
                 />
               )}
             />
-
+            <Route
+              path="/feedlyCallback"
+              render={props => (
+                <LoginCallback
+                  url={URL}
+                  provider="FEEDLY"
+                  query={props.location.search}
+                  logIn={this.logIn}
+                />
+              )}
+            />
             <PrivateRoute
               exact
               path="/"

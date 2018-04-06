@@ -43,11 +43,13 @@ class Login extends Component {
     Promise.all ([
       this.getStateToken ('INOREADER'),
       this.getStateToken ('NEWSBLUR'),
+      this.getStateToken ('FEEDLY'),
     ])
       .then (values => {
         this.setState ({
           inoreaderState: values[0]['state'],
           newsblurState: values[1]['state'],
+          feedlyState: values[2]['state'],
           loaded: true,
         });
       })
@@ -152,10 +154,8 @@ class Login extends Component {
   }
 
   inoreaderUrl () {
-    const clientId = process.env.NODE_ENV === 'development'
-      ? 1000000896
-      : 1000001083;
-    const redirectUri = process.env.NODE_ENV === 'development'
+    const clientId = this.isDev () ? 1000000896 : 1000001083;
+    const redirectUri = this.isDev ()
       ? 'http://localhost:3000/inoreaderCallback'
       : 'https://app.keendly.com/inoreaderCallback';
     return (
@@ -174,6 +174,31 @@ class Login extends Component {
       'https://newsblur.com/oauth/authorize?client_id=rj1Ju@tztvTCiYVP7xRWwJDRxxkuYf5ex?dSej5x&redirect_uri=https://app.keendly.com/newsblurCallback&response_type=code&scope=write&state=' +
       this.state.newsblurState
     );
+  }
+
+  feedlyUrl () {
+    const url = this.isDev ()
+      ? 'https://sandbox7.feedly.com/'
+      : 'https://cloud.feedly.com/';
+    const clientId = this.isDev () ? 'sandbox' : 'keendly';
+    const redirectUri = this.isDev ()
+      ? 'http://localhost:8080'
+      : 'https://app.keendly.com/feedlyCallback';
+
+    return (
+      url +
+      '/v3/auth/auth?response_type=code&client_id=' +
+      clientId +
+      '&redirect_uri=' +
+      redirectUri +
+      '&response_type=code&scope=https://cloud.feedly.com/subscriptions' +
+      '&state=' +
+      this.state.feedlyState
+    );
+  }
+
+  isDev () {
+    return process.env.NODE_ENV === 'development';
   }
 
   render () {
@@ -297,7 +322,8 @@ class Login extends Component {
             </a>
             <a
               className="Login__button Login__feedly"
-              onClick={this.handleFeedlyOpen}
+              href={this.feedlyUrl ()}
+              //onClick={this.handleFeedlyOpen}
             >
               Log in with <b>Feedly</b>
             </a>
