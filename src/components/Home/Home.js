@@ -326,6 +326,8 @@ class Home extends React.Component {
         return 'https://newsblur.com/';
       case 'FEEDLY':
         return 'https://feedly.com/';
+      default:
+        return '';
     }
   }
   render () {
