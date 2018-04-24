@@ -84,6 +84,7 @@ class Home extends React.Component {
     this.onSelectAllClick = this.onSelectAllClick.bind (this);
     this.handleDeliverNow = this.handleDeliverNow.bind (this);
     this.handleSubscribe = this.handleSubscribe.bind (this);
+    this.getProviderUrl = this.getProviderUrl.bind (this);
     this.categoryColors = {};
   }
 
@@ -315,6 +316,18 @@ class Home extends React.Component {
     );
   }
 
+  getProviderUrl () {
+    switch (this.props.userProfile.provider) {
+      case 'OLDREADER':
+        return 'https://theoldreader.com/';
+      case 'INOREADER':
+        return 'https://www.inoreader.com/';
+      case 'NEWSBLUR':
+        return 'https://newsblur.com/';
+      case 'FEEDLY':
+        return 'https://feedly.com/';
+    }
+  }
   render () {
     const feedIds = this.state.selectedFeeds.map (feed => feed.feedId);
     const buttonClasses = this.state.deliveryEmailSet
@@ -387,81 +400,90 @@ class Home extends React.Component {
                 />
               </Mobile>
             </div>
-            {
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell checkbox className="Home__table_checkbox">
-                      <Checkbox
-                        onCheck={this.onSelectAllClick}
-                        checked={
-                          this.state.selectedFeeds.length ===
-                            this.state.data.length
-                        }
-                      />
-                    </TableCell>
-                    <TableCell>Title</TableCell>
-                    <AboveMobile>
-                      <TableCell>Last delivery</TableCell>
-                    </AboveMobile>
-                    <Desktop>
-                      <TableCell>Next delivery</TableCell>
-                    </Desktop>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {this.state.data.map (
-                    (feed, index) =>
-                      (!this.state.search_text ||
-                        feed.title
-                          .toLowerCase ()
-                          .includes (this.state.search_text.toLowerCase ())) &&
-                      <TableRow key={index} className="Home__feed_row">
-                        <TableCell checkbox className="Home__table_checkbox">
-                          <Checkbox
-                            onCheck={(event, isInputChecked) =>
-                              this.onSelectClick (feed, isInputChecked)}
-                            checked={feedIds.indexOf (feed.feedId) !== -1}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <div className="Home__feed_title">
-                            <Badge
-                              badgeContent={
-                                feed.unreadCount > 99
-                                  ? '99+'
-                                  : feed.unreadCount ? feed.unreadCount : '0'
-                              }
-                              className="Home__feed_badge"
-                            >
-                              {feed.title}
-                            </Badge>
-                          </div>
-                          {feed.categories &&
-                            feed.categories.map (
-                              this.renderChip,
-                              this,
-                              feed.feedId
-                            )}
-                        </TableCell>
-                        <AboveMobile>
-                          <TableCell>
-                            {feed.lastDelivery &&
-                              moment (
-                                feed.lastDelivery.deliveryDate
-                              ).fromNow ()}
+            {this.state.data.length === 0
+              ? <div className="Home__message Home__info">
+                  It seems that you don't have any feeds here. Go to
+                  {' '}
+                  <a href={this.getProviderUrl ()}>
+                    {this.props.userProfile.provider}
+                  </a>
+                  {' '} and add some.
+                </div>
+              : <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell checkbox className="Home__table_checkbox">
+                        <Checkbox
+                          onCheck={this.onSelectAllClick}
+                          checked={
+                            this.state.selectedFeeds.length ===
+                              this.state.data.length
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>Title</TableCell>
+                      <AboveMobile>
+                        <TableCell>Last delivery</TableCell>
+                      </AboveMobile>
+                      <Desktop>
+                        <TableCell>Next delivery</TableCell>
+                      </Desktop>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {this.state.data.map (
+                      (feed, index) =>
+                        (!this.state.search_text ||
+                          feed.title
+                            .toLowerCase ()
+                            .includes (
+                              this.state.search_text.toLowerCase ()
+                            )) &&
+                        <TableRow key={index} className="Home__feed_row">
+                          <TableCell checkbox className="Home__table_checkbox">
+                            <Checkbox
+                              onCheck={(event, isInputChecked) =>
+                                this.onSelectClick (feed, isInputChecked)}
+                              checked={feedIds.indexOf (feed.feedId) !== -1}
+                            />
                           </TableCell>
-                        </AboveMobile>
-                        <Desktop>
                           <TableCell>
-                            {nextDelivery (feed.subscriptions)}
+                            <div className="Home__feed_title">
+                              <Badge
+                                badgeContent={
+                                  feed.unreadCount > 99
+                                    ? '99+'
+                                    : feed.unreadCount ? feed.unreadCount : '0'
+                                }
+                                className="Home__feed_badge"
+                              >
+                                {feed.title}
+                              </Badge>
+                            </div>
+                            {feed.categories &&
+                              feed.categories.map (
+                                this.renderChip,
+                                this,
+                                feed.feedId
+                              )}
                           </TableCell>
-                        </Desktop>
-                      </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            }
+                          <AboveMobile>
+                            <TableCell>
+                              {feed.lastDelivery &&
+                                moment (
+                                  feed.lastDelivery.deliveryDate
+                                ).fromNow ()}
+                            </TableCell>
+                          </AboveMobile>
+                          <Desktop>
+                            <TableCell>
+                              {nextDelivery (feed.subscriptions)}
+                            </TableCell>
+                          </Desktop>
+                        </TableRow>
+                    )}
+                  </TableBody>
+                </Table>}
           </div>}
         <Snackbar
           open={this.state.deliverySnackbarOpen}
