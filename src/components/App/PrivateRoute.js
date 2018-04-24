@@ -31,6 +31,8 @@ import {Route, Link, Redirect} from 'react-router-dom';
 
 import dropin from 'braintree-web-drop-in';
 import BraintreeDropin from 'braintree-dropin-react';
+import LinearProgress from 'material-ui/LinearProgress';
+import Snackbar from 'material-ui/Snackbar';
 
 class PrivateRoute extends Component {
   constructor (props) {
@@ -41,6 +43,9 @@ class PrivateRoute extends Component {
       feedbackSuccess: false,
       feedbackError: false,
       paymentOpen: false,
+      paymentInProgress: false,
+      paymentButtonDisabled: false,
+      paymentSnackbarOpen: false,
     };
 
     this.handleFeedbackSubmit = this.handleFeedbackSubmit.bind (this);
@@ -154,6 +159,10 @@ class PrivateRoute extends Component {
   }
 
   handlePaymentMethod = payload => {
+    this.setState ({
+      paymentInProgress: true,
+      paymentButtonDisabled: true,
+    });
     const nonce = payload.nonce;
     fetch (this.props.url + '/users/self/premium', {
       headers: {
@@ -166,9 +175,14 @@ class PrivateRoute extends Component {
         nonce: nonce,
       }),
     }).then (response => {
+      this.setState ({
+        paymentInProgress: false,
+      });
       if (response.ok) {
         this.setState ({
+          paymentSnackbarOpen: true,
           paymentOpen: false,
+          paymentButtonDisabled: false,
         });
         this.props.loadUserProfile (false);
       } else if (response.status === 400) {
@@ -444,6 +458,8 @@ class PrivateRoute extends Component {
                     });
                   }}
                 >
+                  {this.state.paymentInProgress &&
+                    <LinearProgress mode="indeterminate" />}
                   <p>
                     After
                     {' '}
@@ -467,7 +483,9 @@ class PrivateRoute extends Component {
                         <Button
                           label={text}
                           backgroundColor="#5cb85c"
-                          disabled={isDisabled}
+                          disabled={
+                            isDisabled || this.state.paymentButtonDisabled
+                          }
                           labelColor="#ffffff"
                           onClick={onClick}
                         />
@@ -476,6 +494,15 @@ class PrivateRoute extends Component {
                     className="Payment__container"
                   />
                 </Dialog>
+                <Snackbar
+                  open={this.state.paymentSnackbarOpen}
+                  message="You have Premium now!"
+                  onRequestClose={() => {
+                    this.setState ({
+                      paymentSnackbarOpen: false,
+                    });
+                  }}
+                />
               </div>
             : <Redirect
                 to={{pathname: '/login', state: {from: props.location}}}

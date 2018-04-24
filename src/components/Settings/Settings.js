@@ -232,7 +232,7 @@ class Settings extends React.Component {
             />
             <Snackbar
               open={this.state.cancelSnackbarOpen}
-              message="Subscription cancelled"
+              message="You no longer have Premium account"
               autoHideDuration={4000}
               onRequestClose={this.handleCancelSnackbarClose}
             />
