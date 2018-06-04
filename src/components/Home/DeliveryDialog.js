@@ -11,8 +11,8 @@ import ExpansionPanel from '../ExpansionPanel';
 import {Mobile, AboveMobile} from '../../breakpoints';
 
 class DeliveryDialog extends React.Component {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super (props);
     this.state = {
       simpleMode: true,
       simple: {
@@ -24,15 +24,14 @@ class DeliveryDialog extends React.Component {
     };
   }
 
-  render() {
+  render () {
     if (this.state.simpleMode) {
       const articlesCount = this.props.feeds
-        .map(feed => feed.unreadCount)
-        .reduce((a, b) => a + b, 0);
-      const title =
-        this.props.feeds.length === 1
-          ? 'Deliver ' + articlesCount + ' articles'
-          : 'Deliver ' +
+        .map (feed => feed.unreadCount)
+        .reduce ((a, b) => a + b, 0);
+      const title = this.props.feeds.length === 1
+        ? 'Deliver ' + articlesCount + ' articles'
+        : 'Deliver ' +
             articlesCount +
             ' articles from ' +
             this.props.feeds.length +
@@ -54,15 +53,15 @@ class DeliveryDialog extends React.Component {
               primary={true}
               keyboardFocused={true}
               onTouchTap={() => {
-                this.setState({
+                this.setState ({
                   loading: true,
                 });
-                this.props.handleDeliver(
+                this.props.handleDeliver (
                   this.state.simple.includeImages,
                   this.state.simple.extractArticle,
                   this.state.simple.markAsRead,
                   () =>
-                    this.setState({
+                    this.setState ({
                       loading: false,
                     })
                 );
@@ -75,7 +74,7 @@ class DeliveryDialog extends React.Component {
         >
           {this.state.loading && <LinearProgress mode="indeterminate" />}
           <List className="Home__feedList">
-            {this.props.feeds.map(feed => (
+            {this.props.feeds.map (feed => (
               <div>
                 <AboveMobile>
                   <ListItem
@@ -103,7 +102,7 @@ class DeliveryDialog extends React.Component {
             <div className="Home__feedOption">
               <Checkbox
                 onCheck={(event, isInputChecked) => {
-                  this.setState((previousState, props) => {
+                  this.setState ((previousState, props) => {
                     const simple = previousState.simple;
                     simple.includeImages = isInputChecked;
                     return {
@@ -119,7 +118,7 @@ class DeliveryDialog extends React.Component {
             <div className="Home__feedOption">
               <Checkbox
                 onCheck={(event, isInputChecked) => {
-                  this.setState((previousState, props) => {
+                  this.setState ((previousState, props) => {
                     const simple = previousState.simple;
                     simple.extractArticle = isInputChecked;
                     return {
@@ -135,7 +134,7 @@ class DeliveryDialog extends React.Component {
             <div className="Home__feedOption">
               <Checkbox
                 onCheck={(event, isInputChecked) => {
-                  this.setState((previousState, props) => {
+                  this.setState ((previousState, props) => {
                     const simple = previousState.simple;
                     simple.markAsRead = isInputChecked;
                     return {
@@ -144,7 +143,7 @@ class DeliveryDialog extends React.Component {
                   });
                 }}
                 checked={this.state.simple.markAsRead}
-                label=" Mark sent articles as read"
+                label="Mark sent articles as read"
                 labelPosition="left"
               />
             </div>

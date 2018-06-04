@@ -40,6 +40,9 @@ class App extends Component {
 
     this.setUserProfile = this.setUserProfile.bind (this);
     this.logIn = this.logIn.bind (this);
+    this.loadUserProfile = this.loadUserProfile.bind (this);
+    this.isPremium = this.isPremium.bind (this);
+    this.userEmail = this.userEmail.bind (this);
   }
 
   componentWillMount () {
@@ -76,6 +79,18 @@ class App extends Component {
     });
   }
 
+  isPremium () {
+    return (
+      this.state.userProfile &&
+      this.state.userProfile.premium &&
+      this.state.userProfile.premium.active
+    );
+  }
+
+  userEmail () {
+    return this.state.userProfile ? this.state.userProfile.email : '';
+  }
+
   logIn (token) {
     localStorage.setItem (AUTH_KEY, token);
     this.loadUserProfile (true);
@@ -85,6 +100,7 @@ class App extends Component {
     if (!navigator || !navigator.serviceWorker) {
       return;
     }
+
     navigator.serviceWorker.ready.then (registration => {
       if (!registration.pushManager) {
         alert ("Your browser doesn't support push notification.");
@@ -278,20 +294,32 @@ class App extends Component {
                   userProfile={this.state.userProfile}
                 />
               )}
+              url={URL}
               getToken={getToken}
               logOut={logOut}
+              userEmail={this.userEmail}
+              isPremium={this.isPremium}
+              loadUserProfile={this.loadUserProfile}
             />
             <PrivateRoute
               path="/subscriptions"
               render={() => <Subscriptions url={URL} token={getToken ()} />}
+              url={URL}
               getToken={getToken}
               logOut={logOut}
+              userEmail={this.userEmail}
+              isPremium={this.isPremium}
+              loadUserProfile={this.loadUserProfile}
             />
             <PrivateRoute
               path="/deliveries"
               render={() => <Deliveries url={URL} token={getToken ()} />}
+              url={URL}
               getToken={getToken}
               logOut={logOut}
+              userEmail={this.userEmail}
+              isPremium={this.isPremium}
+              loadUserProfile={this.loadUserProfile}
             />
             <PrivateRoute
               path="/settings"
@@ -302,8 +330,12 @@ class App extends Component {
                   setUserProfile={this.setUserProfile}
                 />
               )}
+              url={URL}
               getToken={getToken}
               logOut={logOut}
+              userEmail={this.userEmail}
+              isPremium={this.isPremium}
+              loadUserProfile={this.loadUserProfile}
             />
           </div>
         </Router>

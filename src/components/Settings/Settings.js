@@ -4,8 +4,14 @@ import LinearProgress from 'material-ui/LinearProgress';
 import TextField from 'material-ui/TextField';
 import Checkbox from 'material-ui/Checkbox';
 import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
 import SaveIcon from 'material-ui/svg-icons/content/save';
+import CancelIcon from 'material-ui/svg-icons/navigation/cancel';
 import Snackbar from 'material-ui/Snackbar';
+import Divider from 'material-ui/Divider';
+import Dialog from 'material-ui/Dialog';
+
+import moment from 'moment';
 
 import './Settings.css';
 
@@ -14,12 +20,16 @@ class Settings extends React.Component {
     super (props);
     this.state = {
       loading: false,
-      snackbarOpen: false,
+      saveSnackbarOpen: false,
+      cancelSnackbarOpen: false,
+      cancelDialogOpen: false,
       error: false,
     };
 
     this.handleSubmit = this.handleSubmit.bind (this);
-    this.handleSnackbarClose = this.handleSnackbarClose.bind (this);
+    this.handleSaveSnackbarClose = this.handleSaveSnackbarClose.bind (this);
+    this.handleCancelSnackbarClose = this.handleCancelSnackbarClose.bind (this);
+    this.handleCancelPremium = this.handleCancelPremium.bind (this);
   }
 
   componentWillMount () {
@@ -68,7 +78,7 @@ class Settings extends React.Component {
     }).then (response => {
       if (response.ok) {
         this.setState ({
-          snackbarOpen: true,
+          saveSnackbarOpen: true,
           error: false,
         });
         this.loadSettingsFromServer ();
@@ -86,9 +96,46 @@ class Settings extends React.Component {
     });
   }
 
-  handleSnackbarClose = () => {
+  handleCancelPremium () {
+    fetch (this.props.url + '/users/self/premium', {
+      headers: {
+        Authorization: this.props.token,
+        'Content-Type': 'application/json',
+      },
+      method: 'DELETE',
+    }).then (response => {
+      this.setState ({
+        cancelDialogOpen: false,
+      });
+      if (response.ok) {
+        this.setState ({
+          cancelSnackbarOpen: true,
+          error: false,
+        });
+        this.loadSettingsFromServer ();
+      } else if (response.status === 400) {
+        response.json ().then (json => {
+          this.setState ({
+            error: json.description,
+          });
+        });
+      } else {
+        this.setState ({
+          error: 'Error cancelling subscription, try again later or contact us directly',
+        });
+      }
+    });
+  }
+
+  handleSaveSnackbarClose = () => {
     this.setState ({
-      snackbarOpen: false,
+      saveSnackbarOpen: false,
+    });
+  };
+
+  handleCancelSnackbarClose = () => {
+    this.setState ({
+      cancelSnackbarOpen: false,
     });
   };
 
@@ -110,6 +157,40 @@ class Settings extends React.Component {
             {this.state.error &&
               <div className="Settings__message Settings__error">
                 {this.state.error}
+              </div>}
+            {this.state.data.premium.active &&
+              !this.state.data.premium.expires &&
+              <div>
+                <div className="Settings__message Settings__premium clearfix">
+                  <div>You have Premium account.</div>
+                  {this.state.data.premium.cancellable &&
+                    <RaisedButton
+                      className="Settings__cancel"
+                      onTouchTap={() => {
+                        this.setState ({
+                          cancelDialogOpen: true,
+                        });
+                      }}
+                      secondary
+                      label="Cancel"
+                      style={styles.button}
+                      icon={<CancelIcon />}
+                    />}
+                </div>
+                <Divider />
+              </div>}
+            {this.state.data.premium.active &&
+              this.state.data.premium.expires &&
+              <div>
+                <div className="Settings__message Settings__premium clearfix">
+                  <div>
+                    You cancelled your Premium subscription, you can still use Premium features until it expires on
+                    {' '}
+                    {' '}
+                    {moment (this.state.data.premium.expires).format ('llll')}
+                  </div>
+                </div>
+                <Divider />
               </div>}
             {this.state.data.deliverySender &&
               <div className="Settings__message Settings__info">
@@ -161,11 +242,46 @@ class Settings extends React.Component {
               icon={<SaveIcon />}
             />
             <Snackbar
-              open={this.state.snackbarOpen}
+              open={this.state.saveSnackbarOpen}
               message="Settings saved"
               autoHideDuration={4000}
-              onRequestClose={this.handleSnackbarClose}
+              onRequestClose={this.handleSaveSnackbarClose}
             />
+            <Snackbar
+              open={this.state.cancelSnackbarOpen}
+              message="Subscription cancelled"
+              autoHideDuration={4000}
+              onRequestClose={this.handleCancelSnackbarClose}
+            />
+            <Dialog
+              title="Are you sure?"
+              actions={[
+                <FlatButton
+                  label="No"
+                  primary={true}
+                  onClick={() => {
+                    this.setState ({
+                      cancelDialogOpen: false,
+                    });
+                  }}
+                />,
+                <FlatButton
+                  label="Yes"
+                  primary={true}
+                  keyboardFocused={true}
+                  onClick={this.handleCancelPremium}
+                />,
+              ]}
+              modal={false}
+              open={this.state.cancelDialogOpen}
+              onRequestClose={() => {
+                this.setState ({
+                  cancelDialogOpen: false,
+                });
+              }}
+            >
+              Are you sure that you want to cancel your premium subscription? Your scheduled deliveries will be deleted.
+            </Dialog>
           </div>}
       </div>
     );

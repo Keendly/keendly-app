@@ -28,6 +28,12 @@ import {Mobile, Desktop, AboveMobile, BelowDesktop} from '../../breakpoints';
 
 import {Route, Link, Redirect} from 'react-router-dom';
 
+import StripeCheckout from 'react-stripe-checkout';
+
+const STIRPE_KEY = process.env.NODE_ENV === 'development'
+  ? 'pk_test_ebtQf2mLlV646dWmiVq1DvMH'
+  : 'pk_live_3lgP6IuC8OITZkYYnu7WPTSp';
+
 class PrivateRoute extends Component {
   constructor (props) {
     super (props);
@@ -43,6 +49,7 @@ class PrivateRoute extends Component {
     this.handleFeedbackMessageChange = this.handleFeedbackMessageChange.bind (
       this
     );
+    this.handlePayment = this.handlePayment.bind (this);
   }
 
   handleFeedbackSubmit () {
@@ -147,6 +154,36 @@ class PrivateRoute extends Component {
     );
   }
 
+  handlePayment = payload => {
+    fetch (this.props.url + '/users/self/premium', {
+      headers: {
+        Authorization: this.props.getToken (),
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify ({
+        token_id: payload['id'],
+      }),
+    }).then (response => {
+      if (response.ok) {
+        this.setState ({
+          paymentOpen: false,
+        });
+        this.props.loadUserProfile (false);
+      } else if (response.status === 400) {
+        response.json ().then (json => {
+          this.setState ({
+            error: json.description,
+          });
+        });
+      } else {
+        this.setState ({
+          error: 'Error creating premium subscription',
+        });
+      }
+    });
+  };
+
   render () {
     const {render: Component, ...rest} = this.props;
 
@@ -169,15 +206,26 @@ class PrivateRoute extends Component {
                     <ToolbarGroup>
                       <img className="Header__logo" src={logo} alt="logo" />
                     </ToolbarGroup>
-                    <ToolbarGroup lastChild>
-                      <FlatButton
-                        label="Donate"
-                        backgroundColor="#5cb85c"
-                        icon={<LoyaltyIcon />}
-                        className="dbox-donation-button"
-                        href="https://donorbox.org/keendly"
-                      />
-                    </ToolbarGroup>
+                    {this.props.isPremium && <ToolbarGroup lastChild />}
+                    {!this.props.isPremium () &&
+                      <StripeCheckout
+                        email={this.props.userEmail ()}
+                        token={this.handlePayment}
+                        allowRememberMe={false}
+                        stripeKey={STIRPE_KEY}
+                        panelLabel="Subscribe for 3€ monthly" // prepended to the amount in the bottom pay button
+                        name="Keendly Premium"
+                        description="3€ monthly after free 7 days trial"
+                      >
+                        <ToolbarGroup lastChild>
+                          <FlatButton
+                            label="Premium"
+                            backgroundColor="#FF4081"
+                            icon={<LoyaltyIcon />}
+                            className="premium-button"
+                          />
+                        </ToolbarGroup>
+                      </StripeCheckout>}
                   </Toolbar>
                   <Drawer
                     docked={false}
@@ -245,13 +293,23 @@ class PrivateRoute extends Component {
                         icon={<ListIcon />}
                         containerElement={<Link to="/deliveries" />}
                       />
-                      <FlatButton
-                        label="Donate"
-                        backgroundColor="#5cb85c"
-                        icon={<LoyaltyIcon />}
-                        className="dbox-donation-button"
-                        href="https://donorbox.org/keendly"
-                      />
+                      {!this.props.isPremium () &&
+                        <StripeCheckout
+                          email={this.props.userEmail ()}
+                          token={this.handlePayment}
+                          allowRememberMe={false}
+                          stripeKey={STIRPE_KEY}
+                          panelLabel="Subscribe for 3€ monthly" // prepended to the amount in the bottom pay button
+                          name="Keendly Premium"
+                          description="3€ monthly after free 7 days trial"
+                        >
+                          <FlatButton
+                            label="Go Premium"
+                            backgroundColor="#FF4081"
+                            icon={<LoyaltyIcon />}
+                            className="premium-button"
+                          />
+                        </StripeCheckout>}
                     </ToolbarGroup>
                     <ToolbarGroup lastChild>
                       <ToolbarSeparator />
@@ -302,6 +360,7 @@ class PrivateRoute extends Component {
                 </div>
                 <Dialog
                   title="Leave feedback"
+                  contentStyle={{width: '95%'}}
                   actions={
                     !this.state.feedbackError && !this.state.feedbackSuccess
                       ? [
@@ -369,6 +428,29 @@ class PrivateRoute extends Component {
                       </a>
                     </div>}
                 </Dialog>
+                <Dialog
+                  title="Go Premium!"
+                  contentStyle={{width: '95%'}}
+                  actions={[]}
+                  modal={false}
+                  open={this.state.paymentOpen}
+                  onRequestClose={this.handlePayment}
+                >
+                  <p>
+                    After
+                    {' '}
+                    <b>7 days of a trial period</b>
+                    , you will be charged
+                    {' '}
+                    <b>
+                      3€
+                      monthly
+                    </b>.
+                    <br />
+                    You can cancel the subscription any time, in user settings.
+                  </p>
+
+                </Dialog>
               </div>
             : <Redirect
                 to={{pathname: '/login', state: {from: props.location}}}
@@ -380,8 +462,12 @@ class PrivateRoute extends Component {
 }
 
 PrivateRoute.propTypes = {
+  url: PropTypes.string.isRequired,
   getToken: PropTypes.func.isRequired,
   logOut: PropTypes.func.isRequired,
+  isPremium: PropTypes.func.isRequired,
+  loadUserProfile: PropTypes.func.isRequired,
+  userEmail: PropTypes.func.isRequired,
 };
 
 export default PrivateRoute;
