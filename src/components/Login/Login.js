@@ -20,7 +20,6 @@ class Login extends Component {
     super (props);
     this.state = {
       oldreaderOpen: false,
-      feedlyOpen: false,
       loading: false,
       loggedIn: false,
       loaded: false,
@@ -35,8 +34,6 @@ class Login extends Component {
     this.handleOldreaderPasswordChange = this.handleOldreaderPasswordChange.bind (
       this
     );
-    this.handleFeedlyOpen = this.handleFeedlyOpen.bind (this);
-    this.handleFeedlyClose = this.handleFeedlyClose.bind (this);
   }
 
   componentWillMount () {
@@ -80,18 +77,6 @@ class Login extends Component {
   handleOldreaderClose () {
     this.setState ({
       oldreaderOpen: false,
-    });
-  }
-
-  handleFeedlyOpen () {
-    this.setState ({
-      feedlyOpen: true,
-    });
-  }
-
-  handleFeedlyClose () {
-    this.setState ({
-      feedlyOpen: false,
     });
   }
 
@@ -231,6 +216,9 @@ class Login extends Component {
         {this.state.loaded &&
           !this.state.loadingError &&
           <div className="Login__buttons">
+            <a className="Login__button Login__feedly" href={this.feedlyUrl ()}>
+              Log in with <b>Feedly</b>
+            </a>
             <a
               className="Login__button Login__inoreader"
               href={this.inoreaderUrl ()}
@@ -277,55 +265,11 @@ class Login extends Component {
               />
             </Dialog>
 
-            <Dialog
-              title="Export feeds from Feedly"
-              modal={false}
-              open={this.state.feedlyOpen}
-              onRequestClose={this.handleFeedlyClose}
-              contentStyle={{
-                'max-width': '500px',
-              }}
-              style={{
-                'padding-top': '10px !important',
-              }}
-              actions={[
-                <FlatButton
-                  label="CLOSE"
-                  primary={true}
-                  keyboardFocused={true}
-                  onClick={this.handleFeedlyClose}
-                />,
-              ]}
-            >
-              <p>Unfortunately login via Feedly is not available yet :-(</p>
-              <p>
-                To use Keendly, you can import your feeds to{' '}
-                <a href="http://www.inoreader.com/">Inoreader</a> using the
-                Feedly import feature.
-              </p>
-              <p>
-                Simply go to
-                {' '}
-                <b>Preferences</b>
-                {' '}
-                (the cog in the top right) ->
-                {' '}
-                <b>Import/Export</b> -> <b>Feedly import</b>
-              </p>
-            </Dialog>
-
             <a
               className="Login__button Login__newsblur"
               href={this.newsblurUrl ()}
             >
               Log in with <b>NewsBlur</b>
-            </a>
-            <a
-              className="Login__button Login__feedly"
-              href={this.feedlyUrl ()}
-              //onClick={this.handleFeedlyOpen}
-            >
-              Log in with <b>Feedly</b>
             </a>
           </div>}
       </div>
