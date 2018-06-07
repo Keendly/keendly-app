@@ -72,6 +72,7 @@ class Home extends React.Component {
       deliverySnackbarOpen: false,
       subscriptionSnackbarOpen: false,
       nothingSelectedDialogOpen: false,
+      notPremiumDialogOpen: false,
       deliveryEmailSet: props.userProfile
         ? !!props.userProfile.deliveryEmail
         : false,
@@ -241,6 +242,10 @@ class Home extends React.Component {
       this.setState ({
         nothingSelectedDialogOpen: true,
       });
+    } else if (!this.props.userProfile.premium.active) {
+      this.setState ({
+        notPremiumDialogOpen: true,
+      });
     } else {
       this.setState ({subscriptionOpen: true});
     }
@@ -386,6 +391,36 @@ class Home extends React.Component {
                 }}
               >
                 First select feeds to deliver
+              </Dialog>
+              <Dialog
+                modal={false}
+                open={this.state.notPremiumDialogOpen}
+                onRequestClose={() => {
+                  this.setState ({
+                    notPremiumDialogOpen: false,
+                  });
+                }}
+              >
+                Scheduled deliveries are available for
+                {' '}
+                <b>Premium</b>
+                {' '}
+                users.
+                <br />
+                {' '}
+                Go Premium and start receiving your articles every day, automatically, at a time that suits you best!
+                {' '}
+                <br /><br />
+                For more information about Keendly Premium, visit
+                {' '}
+                <a
+                  href="http://blog.keendly.com/product/premium/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  our blog
+                </a>
+                .
               </Dialog>
               <AboveMobile>
                 <TextField
