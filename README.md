@@ -7,7 +7,14 @@ This is a React application served from S3/CloudFront. It connects to the [Keend
 
 ## screenshots
 
-![Login](/screenshots/login.png)
-![Home](/screenshots/home.png)
-![History](/screenshots/history.png)
-![Settings](/screenshots/settings.png)
+### login screen
+<img src="https://github.com/Keendly/keendly-app/raw/master/screenshots/login.png" width="512" title="Login">
+
+### home
+<img src="https://github.com/Keendly/keendly-app/raw/master/screenshots/home.png" width="512" title="Home">
+
+### deliveries history
+<img src="https://github.com/Keendly/keendly-app/raw/master/screenshots/history.png" width="512" title="History">
+
+### user settings
+<img src="https://github.com/Keendly/keendly-app/raw/master/screenshots/settings.png" width="512" title="Settings">
